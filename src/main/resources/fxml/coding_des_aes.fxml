@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="root" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="coding.DesAesController">
+   <children>
+          <TextField fx:id="tfText" alignment="TOP_LEFT" layoutX="18.0" layoutY="45.0" prefHeight="160.0" prefWidth="750.0" />
+          <TextField fx:id="tfResult" alignment="TOP_LEFT" layoutX="18.0" layoutY="325.0" prefHeight="160.0" prefWidth="750.0" />
+          <TextField fx:id="tfKey" alignment="TOP_LEFT" layoutX="77.0" layoutY="224.0" text="DeMonKey" />
+          <Label layoutX="22.0" layoutY="14.0" text="要处理的内容" />
+          <Label layoutX="18.0" layoutY="297.0" text="结果" />
+          <Label layoutX="22.0" layoutY="261.0" text="Console:" />
+          <Label fx:id="tvConsole" layoutX="78.0" layoutY="261.0" textFill="#d33737" />
+          <Label layoutX="21.0" layoutY="228.0" text="DesKey" />
+          <Button layoutX="114.0" layoutY="10.0" mnemonicParsing="false" onAction="#actionOpen1" text="选择需要加/解密的文件" />
+          <Button layoutX="70.0" layoutY="293.0" mnemonicParsing="false" onAction="#actionOpen2" text="打开加/解密后的文件" />
+          <Button layoutX="277.0" layoutY="224.0" mnemonicParsing="false" onAction="#actionDesEncrypt" text="DES加密" />
+          <Button layoutX="369.0" layoutY="224.0" mnemonicParsing="false" onAction="#actionDesDecrypt" text="DES解密" />
+   </children>
+</AnchorPane>

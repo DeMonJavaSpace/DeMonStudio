@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane fx:id="root" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
+   <children>
+       <MenuBar fx:id="menuBar" prefWidth="800.0">
+           <menus>
+               <Menu fx:id="menu1" />
+               <Menu fx:id="menu2" text="编码">
+                   <MenuItem text="DES" onAction="#openDES"/>
+                   <MenuItem text="MD5" onAction="#openMD5"/>
+               </Menu>
+               <Menu fx:id="menu3" />
+               <Menu fx:id="menu4" />
+           </menus>
+       </MenuBar>
+      <ScrollPane layoutY="25.0" prefHeight="475.0" prefWidth="800.0" fx:id="main_pane"/>
+   </children>
+</AnchorPane>

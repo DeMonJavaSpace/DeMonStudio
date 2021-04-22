@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane fx:id="root" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qr.QRController">
+    <children>
+        <ImageView fx:id="ivCode" fitHeight="250.0" fitWidth="250.0" layoutX="40.0" layoutY="187.0" pickOnBounds="true" preserveRatio="true"/>
+        <Label layoutX="16.0" layoutY="14.0" text="生成内容"/>
+        <TextField fx:id="tfText" alignment="TOP_LEFT" layoutX="16.0" layoutY="38.0" prefHeight="100.0" prefWidth="766.0"/>
+        <Button layoutX="127.0" layoutY="151.0" mnemonicParsing="false" onAction="#actionQr" text="生成二维码"/>
+        <Label layoutX="178.0" layoutY="14.0" text="Console:"/>
+        <Label fx:id="tvConsole" layoutX="240.0" layoutY="14.0" textFill="#d33737"/>
+        <Button layoutX="127.0" layoutY="451.0" mnemonicParsing="false" onAction="#actionSave1" text="保存"/>
+        <Button layoutX="692.0" layoutY="151.0" mnemonicParsing="false" onAction="#actionAdd" text="添加中心图"/>
+        <ImageView fx:id="ivImgCode" fitHeight="250.0" fitWidth="250.0" layoutX="480.0" layoutY="187.0" pickOnBounds="true" preserveRatio="true"/>
+        <Button layoutX="585.0" layoutY="451.0" mnemonicParsing="false" onAction="#actionSave2" text="保存"/>
+        <TextField layoutX="483.0" layoutY="151.0" prefHeight="23.0" prefWidth="203.0" fx:id="tfPic" editable="false"/>
+        <Label layoutX="27.0" layoutY="155.0" text="普通二维码"/>
+        <Label layoutX="400.0" layoutY="155.0" text="图片二维码"/>
+    </children>
+</AnchorPane>
