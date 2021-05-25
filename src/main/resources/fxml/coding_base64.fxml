@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="root" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="coding.Base64Controller">
+    <children>
+        <TextField fx:id="tfText" alignment="TOP_LEFT" layoutX="18.0" layoutY="45.0" prefHeight="160.0" prefWidth="750.0"/>
+        <TextField fx:id="tfResult" alignment="TOP_LEFT" layoutX="18.0" layoutY="325.0" prefHeight="160.0" prefWidth="750.0"/>
+        <Label layoutX="22.0" layoutY="14.0" text="要处理的内容"/>
+        <Label layoutX="22.0" layoutY="295.0" text="结果"/>
+        <Label layoutX="22.0" layoutY="261.0" text="Console:"/>
+        <Label fx:id="tvConsole" layoutX="78.0" layoutY="261.0" textFill="#d33737"/>
+        <Button layoutX="27.0" layoutY="224.0" mnemonicParsing="false" onAction="#actionEncrypt" text="Base64加密"/>
+        <Button layoutX="117.0" layoutY="224.0" mnemonicParsing="false" onAction="#actionDecrypt" text="Base64解密"/>
+        <ChoiceBox layoutX="221.0" layoutY="224.0" prefWidth="150.0"  fx:id="cbCode"/>
+    </children>
+</AnchorPane>

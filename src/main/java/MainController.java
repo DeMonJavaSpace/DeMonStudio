@@ -47,7 +47,7 @@ public class MainController implements Initializable {
             showView("fxml/qr_code.fxml");
         });
         menu3.setGraphic(label3);
-        Label label4 = new Label("Apk加密");
+        Label label4 = new Label("Apk签名");
         label4.setOnMouseClicked(event -> {
             showView("fxml/apk_signed.fxml");
         });
@@ -55,11 +55,16 @@ public class MainController implements Initializable {
     }
 
     public void openDES(ActionEvent event) {
-        showView("fxml/coding_des_aes.fxml");
+        showView("fxml/coding_des.fxml");
     }
 
     public void openMD5(ActionEvent event) {
         showView("fxml/coding_md5.fxml");
+    }
+
+
+    public void openBase64(ActionEvent event) {
+        showView("fxml/coding_base64.fxml");
     }
 
     private void showView(String xml) {

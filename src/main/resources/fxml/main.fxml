@@ -10,6 +10,7 @@
                <Menu fx:id="menu2" text="编码">
                    <MenuItem text="DES" onAction="#openDES"/>
                    <MenuItem text="MD5" onAction="#openMD5"/>
+                   <MenuItem text="Base64" onAction="#openBase64"/>
                </Menu>
                <Menu fx:id="menu3" />
                <Menu fx:id="menu4" />
