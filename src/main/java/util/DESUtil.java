@@ -4,7 +4,6 @@ import javax.crypto.*;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -13,11 +12,11 @@ public class DESUtil {
     /**
      * 偏移变量，固定占8位字节
      */
-    private final static String IV_PARAMETER = "12345678";
+    private String ivParameter = "";
     /**
      * 加密密钥String字符串，长度必须>8
      */
-    private final static String DES_KEY = "des__key";
+    private String desKey = "des__key";
     /**
      * 密钥算法
      */
@@ -29,7 +28,7 @@ public class DESUtil {
     /**
      * 默认编码
      */
-    private static final String CHARSET = "utf-8";
+    private String charset = "UTF-8";
 
     private static DESUtil instance;
 
@@ -41,9 +40,8 @@ public class DESUtil {
 
     private DESUtil() {
         try {
-            cipher = Cipher.getInstance(CIPHER_ALGORITHM);
             keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
@@ -55,81 +53,91 @@ public class DESUtil {
         return instance;
     }
 
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
+    /**
+     * 密钥，长度不能够小于8位
+     *
+     * @param desKey
+     */
+    public void setDesKey(String desKey) throws Exception {
+        if (desKey == null || desKey.length() < 8) {
+            throw new Exception("加/解密失败，key不能小于8位！");
+        }
+        this.desKey = desKey;
+    }
+
+    /**
+     * 偏移量
+     *
+     * @param ivParameter
+     */
+    public void setIvParameter(String ivParameter) {
+        this.ivParameter = ivParameter;
+    }
+
     /**
      * 生成key
      *
-     * @param password
      * @return
      * @throws Exception
      */
-    private Key generateKey(String password) throws Exception {
-        if (password == null || password.length() < 8) {
-            throw new Exception("加/解密失败，key不能小于8位！");
+    private void generateKey(int mode) throws Exception {
+        DESKeySpec dks = new DESKeySpec(desKey.getBytes(charset));
+        Key secretKey = keyFactory.generateSecret(dks);
+        if (Utils.isEmpty(ivParameter)) {
+            cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(mode, secretKey);
+        } else {
+            cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+            byte[] bytes = ivParameter.getBytes(charset);
+            System.out.println("偏移量字节长度=" + bytes.length);
+            ivParameterSpec = new IvParameterSpec(bytes);
+            cipher.init(mode, secretKey, ivParameterSpec);
         }
-        ivParameterSpec = new IvParameterSpec(password.substring(0, 8).getBytes(CHARSET));
-        DESKeySpec dks = new DESKeySpec(password.getBytes(CHARSET));
-        return keyFactory.generateSecret(dks);
-    }
-
-    public final String encrypt(String data) throws Exception {
-        return encrypt(DES_KEY, data);
     }
 
 
     /**
      * DES加密字符串
      *
-     * @param password 加密密码，长度不能够小于8位
-     * @param data     待加密字符串
+     * @param data 待加密字符串
      * @return 加密后内容
      */
-    public String encrypt(String password, String data) throws Exception {
+    public String encrypt(String data) throws Exception {
         if (data == null)
             return null;
-        Key secretKey = generateKey(password);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
-        byte[] bytes = cipher.doFinal(data.getBytes(CHARSET));
+        generateKey(Cipher.ENCRYPT_MODE);
+        byte[] bytes = cipher.doFinal(data.getBytes(charset));
         //JDK1.8及以上可直接使用Base64，JDK1.7及以下可以使用BASE64Encoder
         //Android平台可以使用android.util.Base64
         return new String(Base64.getEncoder().encode(bytes));
     }
 
-    public final String decrypt(String data) throws Exception {
-        return decrypt(DES_KEY, data);
-    }
 
     /**
      * DES解密字符串
      *
-     * @param password 解密密码，长度不能够小于8位
-     * @param data     待解密字符串
+     * @param data 待解密字符串
      * @return 解密后内容
      */
-    public String decrypt(String password, String data) throws Exception {
+    public String decrypt(String data) throws Exception {
         if (data == null)
             return null;
-        byte[] databyte = Base64.getDecoder().decode(data.getBytes(CHARSET));
-        Key secretKey = generateKey(password);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+        byte[] databyte = Base64.getDecoder().decode(data.getBytes(charset));
+        generateKey(Cipher.DECRYPT_MODE);
         byte[] decode = cipher.doFinal(databyte);
-        return new String(decode, CHARSET);
+        return new String(decode, charset);
     }
+
 
     public String encryptFile(String srcFile) throws Exception {
         File file = new File(srcFile);
         if (file.exists()) {
             String destFile = file.getParent() + "/encrypt_" + file.getName();
-            return encryptFile(DES_KEY, srcFile, destFile);
-        } else {
-            throw new Exception("加密失败，待加密的文件不存在！");
-        }
-    }
-
-    public String encryptFile(String password, String srcFile) throws Exception {
-        File file = new File(srcFile);
-        if (file.exists()) {
-            String destFile = file.getParent() + "/encrypt_" + file.getName();
-            return encryptFile(password, srcFile, destFile);
+            return encryptFile(srcFile, destFile);
         } else {
             throw new Exception("加密失败，待加密的文件不存在！");
         }
@@ -142,7 +150,7 @@ public class DESUtil {
      * @param destFile 加密后存放的文件路径
      * @return 加密后的文件路径
      */
-    public String encryptFile(String password, String srcFile, String destFile) throws Exception {
+    public String encryptFile(String srcFile, String destFile) throws Exception {
         if (!new File(srcFile).exists()) {
             throw new Exception("加密失败，待加密的文件不存在！");
         }
@@ -150,8 +158,7 @@ public class DESUtil {
         if (!file.exists()) {
             file.createNewFile();
         }
-        Key secretKey = generateKey(password);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+        generateKey(Cipher.ENCRYPT_MODE);
         InputStream is = new FileInputStream(srcFile);
         OutputStream out = new FileOutputStream(destFile);
         CipherInputStream cis = new CipherInputStream(is, cipher);
@@ -170,17 +177,7 @@ public class DESUtil {
         File file = new File(srcFile);
         if (file.exists()) {
             String destFile = file.getParent() + "/decrypt_" + file.getName();
-            return decryptFile(DES_KEY, srcFile, destFile);
-        } else {
-            throw new Exception("加密失败，已加密的文件不存在！");
-        }
-    }
-
-    public String decryptFile(String password, String srcFile) throws Exception {
-        File file = new File(srcFile);
-        if (file.exists()) {
-            String destFile = file.getParent() + "/decrypt_" + file.getName();
-            return decryptFile(password, srcFile, destFile);
+            return decryptFile(srcFile, destFile);
         } else {
             throw new Exception("加密失败，已加密的文件不存在！");
         }
@@ -193,7 +190,7 @@ public class DESUtil {
      * @param destFile 解密后存放的文件路径
      * @return 解密后的文件路径
      */
-    public String decryptFile(String password, String srcFile, String destFile) throws Exception {
+    public String decryptFile(String srcFile, String destFile) throws Exception {
         if (!new File(srcFile).exists()) {
             throw new Exception("加密失败，已加密的文件不存在！");
         }
@@ -201,8 +198,7 @@ public class DESUtil {
         if (!file.exists()) {
             file.createNewFile();
         }
-        Key secretKey = generateKey(password);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+        generateKey(Cipher.DECRYPT_MODE);
         InputStream is = new FileInputStream(srcFile);
         OutputStream out = new FileOutputStream(destFile);
         CipherOutputStream cos = new CipherOutputStream(out, cipher);

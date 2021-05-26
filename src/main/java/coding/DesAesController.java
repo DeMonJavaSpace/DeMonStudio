@@ -1,12 +1,13 @@
 package coding;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.*;
 import util.DESUtil;
 import util.Utils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -25,11 +26,38 @@ public class DesAesController implements Initializable {
     @FXML
     private TextField tfKey;
     @FXML
+    private TextField tfParameter;
+    @FXML
     private Label tvConsole;
-
+    @FXML
+    private RadioButton rbDes;
+    @FXML
+    private RadioButton rbAes;
+    ToggleGroup group;
+    @FXML
+    private ChoiceBox cbCode;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        group = new ToggleGroup();
+        rbDes.setSelected(true);
+        rbDes.setToggleGroup(group);
+        rbDes.setUserData("DES");
+        rbAes.setToggleGroup(group);
+        rbAes.setUserData("AES");
+        group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                System.out.println(newValue.getUserData().toString());
+            }
+        });
 
+        cbCode.getItems().addAll("UTF-8", "GB2312", "GBK");
+        cbCode.getSelectionModel().selectFirst();
+
+        cbCode.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println(oldValue + " " + newValue);
+            DESUtil.getInstance().setCharset((String) newValue);
+        });
     }
 
     private Stage getStage() {
@@ -60,7 +88,7 @@ public class DesAesController implements Initializable {
         }
     }
 
-    public void actionDesEncrypt(ActionEvent event) {
+    public void actionEncrypt(ActionEvent event) {
         String textStr = tfText.getText();
         if (Utils.isEmpty(textStr)) {
             tvConsole.setText("没有要处理的内容！");
@@ -69,18 +97,21 @@ public class DesAesController implements Initializable {
         try {
             File file = new File(textStr);
             String result;
+            DESUtil.getInstance().setDesKey(tfKey.getText());
+            DESUtil.getInstance().setIvParameter(tfParameter.getText());
             if (file.exists()) {
-                result = DESUtil.getInstance().encryptFile(tfKey.getText(), file.getAbsolutePath());
+                result = DESUtil.getInstance().encryptFile(file.getAbsolutePath());
             } else {
-                result = DESUtil.getInstance().encrypt(tfKey.getText(), textStr);
+                result = DESUtil.getInstance().encrypt(textStr);
             }
+            System.out.println(result);
             tfResult.setText(result);
         } catch (Exception e) {
             tvConsole.setText(e.getMessage());
         }
     }
 
-    public void actionDesDecrypt(ActionEvent event) {
+    public void actionDecrypt(ActionEvent event) {
         String textStr = tfText.getText();
         if (Utils.isEmpty(textStr)) {
             tvConsole.setText("没有要处理的内容！");
@@ -89,11 +120,14 @@ public class DesAesController implements Initializable {
         try {
             File file = new File(textStr);
             String result;
+            DESUtil.getInstance().setDesKey(tfKey.getText());
+            DESUtil.getInstance().setIvParameter(tfParameter.getText());
             if (file.exists()) {
-                result = DESUtil.getInstance().decryptFile(tfKey.getText(), file.getAbsolutePath());
+                result = DESUtil.getInstance().decryptFile(file.getAbsolutePath());
             } else {
-                result = DESUtil.getInstance().decrypt(tfKey.getText(), textStr);
+                result = DESUtil.getInstance().decrypt( textStr);
             }
+            System.out.println(result);
             tfResult.setText(result);
         } catch (Exception e) {
             tvConsole.setText(e.getMessage());

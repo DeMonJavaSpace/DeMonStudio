@@ -1,7 +1,5 @@
 package util;
 
-import util.ByteUtil;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
