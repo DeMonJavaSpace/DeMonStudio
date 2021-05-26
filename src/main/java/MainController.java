@@ -55,7 +55,12 @@ public class MainController implements Initializable {
     }
 
     public void openDES(ActionEvent event) {
-        showView("fxml/coding_des_aes.fxml");
+        showView("fxml/coding_des.fxml");
+    }
+
+
+    public void openAES(ActionEvent event) {
+        showView("fxml/coding_aes.fxml");
     }
 
     public void openMD5(ActionEvent event) {

@@ -8,6 +8,7 @@
            <menus>
                <Menu fx:id="menu1" />
                <Menu fx:id="menu2" text="编码">
+                   <MenuItem text="AES" onAction="#openAES"/>
                    <MenuItem text="DES" onAction="#openDES"/>
                    <MenuItem text="MD5" onAction="#openMD5"/>
                    <MenuItem text="Base64" onAction="#openBase64"/>

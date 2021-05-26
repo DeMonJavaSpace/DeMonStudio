@@ -16,7 +16,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class DesAesController implements Initializable {
+public class DesController implements Initializable {
     @FXML
     private AnchorPane root;
     @FXML
@@ -30,27 +30,9 @@ public class DesAesController implements Initializable {
     @FXML
     private Label tvConsole;
     @FXML
-    private RadioButton rbDes;
-    @FXML
-    private RadioButton rbAes;
-    ToggleGroup group;
-    @FXML
     private ChoiceBox cbCode;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        group = new ToggleGroup();
-        rbDes.setSelected(true);
-        rbDes.setToggleGroup(group);
-        rbDes.setUserData("DES");
-        rbAes.setToggleGroup(group);
-        rbAes.setUserData("AES");
-        group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                System.out.println(newValue.getUserData().toString());
-            }
-        });
-
         cbCode.getItems().addAll("UTF-8", "GB2312", "GBK");
         cbCode.getSelectionModel().selectFirst();
 
@@ -106,6 +88,7 @@ public class DesAesController implements Initializable {
             }
             System.out.println(result);
             tfResult.setText(result);
+            tvConsole.setText("");
         } catch (Exception e) {
             tvConsole.setText(e.getMessage());
         }
@@ -129,6 +112,7 @@ public class DesAesController implements Initializable {
             }
             System.out.println(result);
             tfResult.setText(result);
+            tvConsole.setText("");
         } catch (Exception e) {
             tvConsole.setText(e.getMessage());
         }

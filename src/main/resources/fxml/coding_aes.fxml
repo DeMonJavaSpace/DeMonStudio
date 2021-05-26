@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="coding.DesAesController">
+<AnchorPane fx:id="root" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="coding.AesController">
     <children>
         <TextField fx:id="tfText" alignment="TOP_LEFT" layoutX="18.0" layoutY="45.0" prefHeight="160.0" prefWidth="750.0" />
         <TextField fx:id="tfResult" alignment="TOP_LEFT" layoutX="18.0" layoutY="325.0" prefHeight="160.0" prefWidth="750.0" />
@@ -19,10 +19,11 @@
         <Button layoutX="70.0" layoutY="293.0" mnemonicParsing="false" onAction="#actionOpen2" text="打开加/解密后的文件" />
         <Button layoutX="592.0" layoutY="224.0" mnemonicParsing="false" onAction="#actionEncrypt" text="加密" />
         <Button layoutX="641.0" layoutY="225.0" mnemonicParsing="false" onAction="#actionDecrypt" text="解密" />
-        <RadioButton fx:id="rbDes" layoutX="473.0" layoutY="228.0" mnemonicParsing="false" text="DES" />
-        <RadioButton fx:id="rbAes" layoutX="531.0" layoutY="228.0" mnemonicParsing="false" text="AES" />
         <Label layoutX="235.0" layoutY="230.0" text="偏移量" />
         <TextField fx:id="tfParameter" alignment="TOP_LEFT" layoutX="283.0" layoutY="225.0" />
         <ChoiceBox fx:id="cbCode" layoutX="618.0" layoutY="10.0" prefWidth="150.0" />
+        <ChoiceBox fx:id="cbDigits" layoutX="369.0" layoutY="10.0" prefWidth="150.0" />
+      <Label layoutX="558.0" layoutY="14.0" text="字符编码" />
+      <Label layoutX="316.0" layoutY="14.0" text="密码位数" />
     </children>
 </AnchorPane>

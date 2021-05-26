@@ -3,17 +3,23 @@ package util;
 import javax.crypto.*;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 /**
- * DES加密实现
+ * @author DeMon
+ * Created on 2021/5/26.
+ * E-mail 757454343@qq.com
+ * Desc: AES加密实现
  */
-public class DESUtil {
+public class AESUtil {
     /**
-     * 偏移变量，DES固定占8位字节
+     * 偏移变量，AES固定占16位字节
      */
     private String ivParameter = "";
     /**
@@ -23,33 +29,36 @@ public class DESUtil {
     /**
      * 密钥算法
      */
-    private static final String ALGORITHM = "DES";
+    private static final String ALGORITHM = "AES";
     /**
      * 加密/解密算法-工作模式-填充模式
      */
-    private static final String CIPHER_ALGORITHM = "DES/CBC/PKCS5Padding";
+    private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
     /**
      * 默认编码
      */
     private String charset = "UTF-8";
 
-    private static DESUtil instance;
+    private static AESUtil instance;
 
     private Cipher cipher;
 
-    private SecretKeyFactory keyFactory;
+    private KeyGenerator keyGenerator;
 
-    private DESUtil() {
+    private int digits = 128;
+
+    private AESUtil() {
         try {
-            keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
+            //1.构造密钥生成器，指定为AES算法,不区分大小写
+            keyGenerator = KeyGenerator.getInstance(ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
-    public static DESUtil getInstance() {
+    public static AESUtil getInstance() {
         if (instance == null) {
-            instance = new DESUtil();
+            instance = new AESUtil();
         }
         return instance;
     }
@@ -58,17 +67,10 @@ public class DESUtil {
         this.charset = charset;
     }
 
-    /**
-     * 密钥，长度不能够小于8位
-     *
-     * @param desKey
-     */
-    public void setDesKey(String desKey) throws Exception {
-        if (desKey == null || desKey.length() < 8) {
-            throw new Exception("加/解密失败，key不能小于8位！");
-        }
-        this.desKey = desKey;
+    public void setDigits(int digits) {
+        this.digits = digits;
     }
+
 
     /**
      * 偏移量
@@ -80,14 +82,32 @@ public class DESUtil {
     }
 
     /**
+     * 密钥,AES无长度限制
+     *
+     * @param desKey
+     */
+    public void setDesKey(String desKey) {
+        this.desKey = desKey;
+    }
+
+
+    /**
      * 生成key
      *
      * @return
      * @throws Exception
      */
     private void generateKey(int mode) throws Exception {
-        DESKeySpec dks = new DESKeySpec(desKey.getBytes(charset));
-        Key secretKey = keyFactory.generateSecret(dks);
+        //2.根据密钥规则初始化密钥生成器生成一个128位的随机源,根据传入的字节数组
+        keyGenerator.init(digits, new SecureRandom(desKey.getBytes()));
+        //3.产生原始对称密钥
+        SecretKey key = keyGenerator.generateKey();
+        //4.获得原始对称密钥的字节数组
+        byte[] raw = key.getEncoded();
+        //5.根据字节数组生成AES密钥
+        SecretKey secretKey = new SecretKeySpec(raw, ALGORITHM);
+        //6.根据指定算法AES自成密码器
+        //7.初始化密码器，第一个参数为加密(Encrypt_mode)或者解密解密(Decrypt_mode)操作，第二个参数为使用的KEY
         if (Utils.isEmpty(ivParameter)) {
             cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(mode, secretKey);
