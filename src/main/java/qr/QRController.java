@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,7 +31,7 @@ public class QRController implements Initializable {
     @FXML
     public ImageView ivImgCode;
     @FXML
-    public TextField tfText;
+    public TextArea tfText;
     @FXML
     public TextField tfPic;
     @FXML

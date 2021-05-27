@@ -21,9 +21,9 @@ public class AesController implements Initializable {
     @FXML
     private AnchorPane root;
     @FXML
-    private TextField tfText;
+    private TextArea tfText;
     @FXML
-    private TextField tfResult;
+    private TextArea tfResult;
     @FXML
     private TextField tfKey;
     @FXML

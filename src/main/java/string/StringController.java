@@ -14,13 +14,13 @@ import java.util.ResourceBundle;
 
 public class StringController implements Initializable {
     @FXML
-    private TextField tfText;
+    private TextArea tfText;
     @FXML
     private TextField tfReplace1;
     @FXML
     private TextField tfReplace2;
     @FXML
-    private TextField tfResult;
+    private TextArea tfResult;
     @FXML
     private Label tvConsole;
     @FXML

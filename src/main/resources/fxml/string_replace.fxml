@@ -3,20 +3,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="string.StringController">
-   <children>
-       <TextField fx:id="tfText" alignment="TOP_LEFT" layoutX="14.0" layoutY="36.0" prefHeight="160.0" prefWidth="750"/>
-       <Label layoutX="14.0" layoutY="14.0" text="要处理的文本" />
-       <TextField fx:id="tfReplace1" layoutX="71.0" layoutY="224.0" />
-       <Label layoutX="14.0" layoutY="228.0" text="被替换的" />
-       <Label layoutX="258.0" layoutY="228.0" text="要替换的" />
-       <TextField fx:id="tfReplace2" layoutX="316.0" layoutY="224.0" />
-       <RadioButton fx:id="rbAll" layoutX="80.0" layoutY="260.0" mnemonicParsing="false" text="全部" userData="0" />
-       <RadioButton fx:id="rbFirst" layoutX="140.0" layoutY="260.0" mnemonicParsing="false" text="第一个" userData="1" />
-       <Button layoutX="531.0" layoutY="224.0" mnemonicParsing="false" onAction="#actionReplace" text="替换" />
-       <TextField fx:id="tfResult" alignment="TOP_LEFT" layoutX="18.0" layoutY="325.0" prefHeight="160.0" prefWidth="750"/>
-       <Label layoutX="14.0" layoutY="297.0" text="结果" />
-      <Label layoutX="14.0" layoutY="260.0" text="替换规则" />
-      <Label layoutX="243.0" layoutY="261.0" text="Console:" />
-      <Label fx:id="tvConsole" layoutX="297.0" layoutY="261.0" textFill="#d33737" />
-   </children>
+    <children>
+        <TextArea fx:id="tfText" layoutX="14.0" layoutY="36.0" prefHeight="160.0" prefWidth="750" wrapText="true"/>
+        <Label layoutX="14.0" layoutY="14.0" text="要处理的文本"/>
+        <TextField fx:id="tfReplace1" layoutX="71.0" layoutY="224.0"/>
+        <Label layoutX="14.0" layoutY="228.0" text="被替换的"/>
+        <Label layoutX="258.0" layoutY="228.0" text="要替换的"/>
+        <TextField fx:id="tfReplace2" layoutX="316.0" layoutY="224.0"/>
+        <RadioButton fx:id="rbAll" layoutX="80.0" layoutY="260.0" mnemonicParsing="false" text="全部" userData="0"/>
+        <RadioButton fx:id="rbFirst" layoutX="140.0" layoutY="260.0" mnemonicParsing="false" text="第一个" userData="1"/>
+        <Button layoutX="531.0" layoutY="224.0" mnemonicParsing="false" onAction="#actionReplace" text="替换"/>
+        <TextArea fx:id="tfResult" wrapText="true" layoutX="18.0" layoutY="325.0" prefHeight="160.0" prefWidth="750"/>
+        <Label layoutX="14.0" layoutY="297.0" text="结果"/>
+        <Label layoutX="14.0" layoutY="260.0" text="替换规则"/>
+        <Label layoutX="243.0" layoutY="261.0" text="Console:"/>
+        <Label fx:id="tvConsole" layoutX="297.0" layoutY="261.0" textFill="#d33737"/>
+    </children>
 </AnchorPane>

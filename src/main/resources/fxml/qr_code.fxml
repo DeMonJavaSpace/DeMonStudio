@@ -7,7 +7,7 @@
     <children>
         <ImageView fx:id="ivCode" fitHeight="250.0" fitWidth="250.0" layoutX="40.0" layoutY="187.0" pickOnBounds="true" preserveRatio="true"/>
         <Label layoutX="16.0" layoutY="14.0" text="生成内容"/>
-        <TextField fx:id="tfText" alignment="TOP_LEFT" layoutX="16.0" layoutY="38.0" prefHeight="100.0" prefWidth="766.0"/>
+        <TextArea fx:id="tfText" wrapText="true" layoutX="16.0" layoutY="38.0" prefHeight="100.0" prefWidth="766.0"/>
         <Button layoutX="127.0" layoutY="151.0" mnemonicParsing="false" onAction="#actionQr" text="生成二维码"/>
         <Label layoutX="178.0" layoutY="14.0" text="Console:"/>
         <Label fx:id="tvConsole" layoutX="240.0" layoutY="14.0" textFill="#d33737"/>

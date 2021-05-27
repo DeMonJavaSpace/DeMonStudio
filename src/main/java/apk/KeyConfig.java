@@ -1,4 +1,4 @@
-package signed;
+package apk;
 
 import util.Utils;
 import javafx.util.Pair;

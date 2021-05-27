@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -19,7 +20,7 @@ public class MD5Controller implements Initializable {
     @FXML
     private AnchorPane root;
     @FXML
-    private TextField tfText;
+    private TextArea tfText;
     @FXML
     private TextField tfResult1;
     @FXML

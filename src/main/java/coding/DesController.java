@@ -20,9 +20,9 @@ public class DesController implements Initializable {
     @FXML
     private AnchorPane root;
     @FXML
-    private TextField tfText;
+    private TextArea tfText;
     @FXML
-    private TextField tfResult;
+    private TextArea tfResult;
     @FXML
     private TextField tfKey;
     @FXML
@@ -31,6 +31,7 @@ public class DesController implements Initializable {
     private Label tvConsole;
     @FXML
     private ChoiceBox cbCode;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cbCode.getItems().addAll("UTF-8", "GB2312", "GBK");
@@ -108,7 +109,7 @@ public class DesController implements Initializable {
             if (file.exists()) {
                 result = DESUtil.getInstance().decryptFile(file.getAbsolutePath());
             } else {
-                result = DESUtil.getInstance().decrypt( textStr);
+                result = DESUtil.getInstance().decrypt(textStr);
             }
             System.out.println(result);
             tfResult.setText(result);

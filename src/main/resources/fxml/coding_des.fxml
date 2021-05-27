@@ -7,8 +7,8 @@
 
 <AnchorPane fx:id="root" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="coding.DesController">
     <children>
-        <TextField fx:id="tfText" alignment="TOP_LEFT" layoutX="18.0" layoutY="45.0" prefHeight="160.0" prefWidth="750.0" />
-        <TextField fx:id="tfResult" alignment="TOP_LEFT" layoutX="18.0" layoutY="325.0" prefHeight="160.0" prefWidth="750.0" />
+        <TextArea fx:id="tfText" wrapText="true" layoutX="18.0" layoutY="45.0" prefHeight="160.0" prefWidth="750.0" />
+        <TextArea fx:id="tfResult" wrapText="true" layoutX="18.0" layoutY="325.0" prefHeight="160.0" prefWidth="750.0" />
         <TextField fx:id="tfKey" alignment="TOP_LEFT" layoutX="47.0" layoutY="225.0" text="DeMonKey" />
         <Label layoutX="22.0" layoutY="14.0" text="要处理的内容" />
         <Label layoutX="18.0" layoutY="297.0" text="结果" />

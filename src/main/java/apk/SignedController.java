@@ -1,20 +1,34 @@
-package signed;
+package apk;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import util.FileUtil;
+import util.Log;
+import util.StageManager;
 import util.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class SignedController implements Initializable {
+    private static final String TAG = "SignedController";
     @FXML
     private TextField tfKey;
     @FXML
@@ -25,9 +39,16 @@ public class SignedController implements Initializable {
     private Label tvMsg;
     @FXML
     private AnchorPane root;
+    @FXML
+    private RadioButton rbYes;
+    @FXML
+    private RadioButton rbNo;
 
     private boolean isKeyOk = false;
     private boolean isApkOk = false;
+
+    private boolean isChannel = false;
+    private List<String> channelList = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -42,6 +63,50 @@ public class SignedController implements Initializable {
         } else {
             tvMsg.setText("加载默认密钥配置文件失败，请手动选择！");
         }
+
+        ToggleGroup group = new ToggleGroup();
+        rbYes.setToggleGroup(group);
+        rbYes.setUserData(true);
+        rbNo.setToggleGroup(group);
+        rbNo.setSelected(true);
+        rbNo.setUserData(false);
+        group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            isChannel = (boolean) newValue.getUserData();
+        });
+
+        String selectedChannels = FileUtil.readText(System.getProperty("user.dir") + "/channel_selected.txt");
+        Log.i(TAG, "openChannel: " + selectedChannels);
+        if (!Utils.isEmpty(selectedChannels)) {
+            channelList.clear();
+            channelList.addAll(Arrays.asList(selectedChannels.split(";")));
+        }
+    }
+
+    public void openChannel() {
+        Platform.runLater(() -> {
+            Stage channelStage = StageManager.getStage("channel_setting");
+            if (channelStage == null) {
+                try {
+                    channelStage = new Stage();//创建舞台；
+                    Parent target = FXMLLoader.load(getClass().getResource("../fxml/apk_channel.fxml"));
+                    channelStage.setScene(new Scene(target)); //将场景载入舞台；
+                    channelStage.setTitle("Apk渠道配置");
+                    // 存放Scene
+                    StageManager.put("channel_setting", channelStage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            channelStage.show();
+            channelStage.setOnCloseRequest(event -> {
+                String selectedChannels = FileUtil.readText(System.getProperty("user.dir") + "/channel_selected.txt");
+                Log.i(TAG, "openChannel: " + selectedChannels);
+                if (!Utils.isEmpty(selectedChannels)) {
+                    channelList.clear();
+                    channelList.addAll(Arrays.asList(selectedChannels.split(";")));
+                }
+            });
+        });
     }
 
     public void refreshKey(ActionEvent actionEvent) {
@@ -210,6 +275,10 @@ public class SignedController implements Initializable {
         }
         if (!isApkOk) {
             tvMsg.setText("待签名的Apk异常，请重新选择！");
+            return false;
+        }
+        if (isChannel && channelList.isEmpty()) {
+            tvMsg.setText("请至少选择一个渠道！");
             return false;
         }
         return true;
