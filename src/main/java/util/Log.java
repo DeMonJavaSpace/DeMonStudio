@@ -8,6 +8,6 @@ package util;
  */
 public class Log {
     public static void i(String TAG, String content) {
-        System.out.println(TAG + " : " + content);
+        System.out.println(TAG + "---" + content);
     }
 }

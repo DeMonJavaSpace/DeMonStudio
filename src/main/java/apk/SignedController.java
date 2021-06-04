@@ -14,12 +14,13 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import util.FileUtil;
-import util.Log;
-import util.StageManager;
-import util.Utils;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.FileUtils;
+import util.*;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ public class SignedController implements Initializable {
     private boolean isChannel = false;
     private List<String> channelList = new ArrayList<>();
 
+    private String channelKey = "";
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //初始加载默认的密钥配置文件
@@ -74,10 +77,20 @@ public class SignedController implements Initializable {
             isChannel = (boolean) newValue.getUserData();
         });
 
+        initChannel();
+    }
+
+    private void initChannel() {
+        String channels = FileUtil.readText(System.getProperty("user.dir") + "/channel.txt");
+        if (!Utils.isEmpty(channels) && channels.contains("_")) {
+            channelKey = channels.split("_")[0];
+        }
+        Log.i(TAG, "channelKey: " + channelKey);
+
         String selectedChannels = FileUtil.readText(System.getProperty("user.dir") + "/channel_selected.txt");
-        Log.i(TAG, "openChannel: " + selectedChannels);
+        Log.i(TAG, "selectedChannels: " + selectedChannels);
+        channelList.clear();
         if (!Utils.isEmpty(selectedChannels)) {
-            channelList.clear();
             channelList.addAll(Arrays.asList(selectedChannels.split(";")));
         }
     }
@@ -99,12 +112,7 @@ public class SignedController implements Initializable {
             }
             channelStage.show();
             channelStage.setOnCloseRequest(event -> {
-                String selectedChannels = FileUtil.readText(System.getProperty("user.dir") + "/channel_selected.txt");
-                Log.i(TAG, "openChannel: " + selectedChannels);
-                if (!Utils.isEmpty(selectedChannels)) {
-                    channelList.clear();
-                    channelList.addAll(Arrays.asList(selectedChannels.split(";")));
-                }
+                initChannel();
             });
         });
     }
@@ -126,6 +134,7 @@ public class SignedController implements Initializable {
         File file = new File(tfKey.getText());
         if (file.exists()) {
             Utils.openUrl(tfKey.getText());
+            tvMsg.setText("编辑密钥配置完成后，请刷新！");
         } else {
             tvMsg.setText("编辑密钥配置文件失败，请手动选择！");
         }
@@ -173,11 +182,15 @@ public class SignedController implements Initializable {
             tfApk.setText(path);
             tfSign.setText("");
             isApkOk = true;
-            String msg = Utils.exeCmd("java -jar apksigner.jar verify -v " + path);
-            if (Utils.isEmpty(msg)) {
-                tvMsg.setText("Apk尚未签名，可以开始签名！");
-            } else {
-                tvMsg.setText("Apk已签名，可以尝试重新签名！\n" + msg);
+            try {
+                String msg = Utils.exeCmd("java -jar apksigner.jar verify -v " + path);
+                if (Utils.isEmpty(msg)) {
+                    tvMsg.setText("Apk尚未签名，可以开始签名！");
+                } else {
+                    tvMsg.setText("Apk已签名，可以尝试重新签名！\n" + msg);
+                }
+            } catch (Exception e) {
+                tvMsg.setText(e.getMessage());
             }
         }
     }
@@ -185,74 +198,147 @@ public class SignedController implements Initializable {
 
     public void signOld(ActionEvent actionEvent) {
         if (checkStatus()) {
-            String signPath = new File(tfApk.getText()).getParent() + "\\sign_old-" + System.currentTimeMillis() + ".apk";
-            String cmd = "jarsigner -verbose -keystore " + KeyConfig.getInstance().getPath()
-                    + " -storepass " + KeyConfig.getInstance().getStorePassword()
-                    + " -keypass " + KeyConfig.getInstance().getKeyPassword()
-                    + " -signedjar "
-                    + signPath + " "
-                    + tfApk.getText() + " "
-                    + KeyConfig.getInstance().getKeyAlias()
-                    + " -sigfile CERT";
-            String msg = Utils.exeCmd(cmd);
-            if (new File(signPath).exists() && msg.contains("META-INF/MANIFEST.MF")) {
-                tfSign.setText(signPath);
-                tvMsg.setText("旧v1签名成功！\n" + msg);
-            } else {
-                tvMsg.setText("旧v1签名失败！可能存在的原因：\n1.密钥别名or密码配置错误！\n2.已使用新v1&v2签名过的Apk，无法使用旧v1签名重新签名。\n" + msg);
-                File signApk = new File(signPath);
-                if (signApk.exists()) {
-                    signApk.delete();
+            ThreadUtil.runOnIOThread(() -> {
+                String apkPath = tfApk.getText();
+                File apkFile = new File(apkPath);
+                File signDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_signv1");
+                signDirectory.mkdirs();
+                try {
+                    if (isChannel) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String channel : channelList) {
+                            Platform.runLater(() -> {
+                                sb.append(channel + "渠道开始...\n");
+                                tvMsg.setText(sb.toString());
+                            });
+                            String msg = signV1(apkPath, signDirectory.getAbsolutePath(), channel);
+                            sb.append(msg);
+                            Platform.runLater(() -> {
+                                tvMsg.setText(sb.toString());
+                            });
+                        }
+                    } else {
+                        String msg = signV1(apkPath, signDirectory.getAbsolutePath(),"");
+                        Platform.runLater(() -> {
+                            tvMsg.setText(msg);
+                        });
+                    }
+                    tfSign.setText(signDirectory.getAbsolutePath());
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        tvMsg.setText(e.getMessage());
+                    });
                 }
-            }
+            });
         }
     }
 
+
+    private String signV1(String apkPath, String signDirectory, String channel) throws Exception {
+        String signApkPath = signDirectory + "\\" + FileUtil.createNewFileName(new File(apkPath), channel);
+        File signApk = new File(signApkPath);
+        if (signApk.exists()) {
+            signApk.delete();
+        }
+        String cmd = "jarsigner -verbose -keystore " + KeyConfig.getInstance().getPath()
+                + " -storepass " + KeyConfig.getInstance().getStorePassword()
+                + " -keypass " + KeyConfig.getInstance().getKeyPassword()
+                + " -signedjar "
+                + signApkPath + " "
+                + apkPath + " "
+                + KeyConfig.getInstance().getKeyAlias()
+                + " -sigfile CERT";
+        String msg = Utils.exeCmd(cmd);
+        Log.i(TAG, "signV1 sign: " + msg);
+        if (new File(signApkPath).exists() && msg.contains("META-INF/MANIFEST.MF")) {
+            FileUtil.addChannel(signApkPath, channelKey, channel);
+            return apkPath + "-旧v1签名成功！\n";
+        } else {
+            return apkPath + "-旧v1签名失败！可能存在的原因：\n1.密钥别名or密码配置错误！\n2.已经签名过的Apk，无法使用旧v1签名重新签名。\n";
+        }
+    }
+
+
     public void signNew(ActionEvent actionEvent) {
         if (checkStatus()) {
-            //对齐
-            String alignapk = new File(tfApk.getText()).getParent() + "\\sign_align-" + System.currentTimeMillis() + ".apk";
-            String align = "zipalign -v 4 " + tfApk.getText() + " " + alignapk;
-            String alignMsg = Utils.exeCmd(align);
-            if (new File(alignapk).exists()) {
-                tvMsg.setText("新v1&v2对齐成功！\n" + alignMsg);
-            } else {
-                tvMsg.setText("新v1&v2对齐失败！\n" + alignMsg);
-                return;
-            }
-            String signPath = new File(tfApk.getText()).getParent() + "\\sign_new-" + System.currentTimeMillis() + ".apk";
-            String cmd = "java -jar apksigner.jar sign  --ks " + KeyConfig.getInstance().getPath()
-                    + " --ks-key-alias " + KeyConfig.getInstance().getKeyAlias()
-                    + " --ks-pass pass:" + KeyConfig.getInstance().getStorePassword()
-                    + " --key-pass pass:" + KeyConfig.getInstance().getKeyPassword()
-                    + " --out "
-                    + signPath + " "
-                    + alignapk;
-            String msg = Utils.exeCmd(cmd);
-            if (new File(signPath).exists()) {
-                tfSign.setText(signPath);
-                tvMsg.setText("新v1&v2签名成功！\n" + msg);
-                File alignapkFile = new File(alignapk);
-                if (alignapkFile.exists()) {
-                    alignapkFile.delete();
+            ThreadUtil.runOnIOThread(() -> {
+                String apkPath = tfApk.getText();
+                File apkFile = new File(apkPath);
+                File channelDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_channel");
+                channelDirectory.mkdirs();
+                File alignDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_align");
+                alignDirectory.mkdirs();
+                File signDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_signv2");
+                signDirectory.mkdirs();
+                try {
+                    if (isChannel) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String channel : channelList) {
+                            Platform.runLater(() -> {
+                                sb.append(channel + "渠道开始...\n");
+                                tvMsg.setText(sb.toString());
+                            });
+                            String channelApkPath = FileUtil.copyFile(apkPath, channelDirectory.getAbsolutePath() + "\\" + FileUtil.createNewFileName(apkFile, channel));
+                            FileUtil.addChannel(channelApkPath, channelKey, channel);
+                            String msg = signedV2(channelApkPath, alignDirectory.getAbsolutePath(), signDirectory.getAbsolutePath());
+                            sb.append(msg);
+                            Platform.runLater(() -> {
+                                tvMsg.setText(sb.toString());
+                            });
+                        }
+                    } else {
+                        String msg = signedV2(apkPath, alignDirectory.getAbsolutePath(), signDirectory.getAbsolutePath());
+                        Platform.runLater(() -> {
+                            tvMsg.setText(msg);
+                        });
+                    }
+                    tfSign.setText(signDirectory.getAbsolutePath());
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        tvMsg.setText(e.getMessage());
+                    });
                 }
-            } else {
-                tvMsg.setText("新v1&v2签名失败！可能存在的原因：\n密钥别名or密码配置错误！\n" + msg);
-                File signApk = new File(signPath);
-                if (signApk.exists()) {
-                    signApk.delete();
-                }
-            }
-            File alignapkFile = new File(alignapk);
-            if (alignapkFile.exists()) {
-                alignapkFile.delete();
-            }
+                FileUtil.deleteDir(alignDirectory);
+                FileUtil.deleteDir(channelDirectory);
+            });
         }
+    }
+
+    private String signedV2(String apkPath, String alignDirectory, String signDirectory) throws Exception {
+        String apkName = new File(apkPath).getName();
+        StringBuilder sb = new StringBuilder();
+        //对齐
+        String alignapk = alignDirectory + "\\" + apkName;
+        String align = "zipalign -v 4 " + apkPath + " " + alignapk;
+        String alignMsg = Utils.exeCmd(align);
+        Log.i(TAG, "signedV2 align: " + alignMsg);
+        if (new File(alignapk).exists()) {
+            sb.append(apkPath + "-新v1&v2对齐成功！\n");
+        } else {
+            sb.append(apkPath + "-新v1&v2对齐失败！\n");
+            return sb.toString();
+        }
+        String signPath = signDirectory + "\\" + apkName;
+        String cmd = "java -jar apksigner.jar sign  --ks " + KeyConfig.getInstance().getPath()
+                + " --ks-key-alias " + KeyConfig.getInstance().getKeyAlias()
+                + " --ks-pass pass:" + KeyConfig.getInstance().getStorePassword()
+                + " --key-pass pass:" + KeyConfig.getInstance().getKeyPassword()
+                + " --out "
+                + signPath + " "
+                + alignapk;
+        String msg = Utils.exeCmd(cmd);
+        Log.i(TAG, "signedV2 sign: " + msg);
+        if (new File(signPath).exists()) {
+            sb.append(apkPath + "-新v1&v2签名成功！\n");
+        } else {
+            sb.append(apkPath + "-新v1&v2签名失败！可能存在的原因：密钥别名or密码配置错误！\n");
+        }
+        return sb.toString();
     }
 
     public void openSign(ActionEvent actionEvent) {
         if (!Utils.isEmpty(tfSign.getText())) {
-            Utils.openUrl(new File(tfSign.getText()).getParent());
+            Utils.openUrl(new File(tfSign.getText()).getAbsolutePath());
         } else {
             tvMsg.setText("请先签名生成新Apk！");
         }
@@ -260,8 +346,27 @@ public class SignedController implements Initializable {
 
     public void startStatus(ActionEvent actionEvent) {
         if (!Utils.isEmpty(tfSign.getText())) {
-            String msg = Utils.exeCmd("java -jar apksigner.jar verify -v " + tfSign.getText());
-            tvMsg.setText(msg);
+            ThreadUtil.runOnIOThread(() -> {
+                try {
+                    File[] apkFiles = new File(tfSign.getText()).listFiles((file1, filename) -> filename.endsWith(".apk"));
+                    StringBuilder sb = new StringBuilder();
+                    for (File apkFile : apkFiles) {
+                        String msg = Utils.exeCmd("java -jar apksigner.jar verify -v " + apkFile.getAbsolutePath());
+                        sb.append(apkFile.getName() + ": ");
+                        String[] msgs = msg.split("\n");
+                        for (int i = 0; i < 4; i++) {
+                            sb.append(msgs[i] + "\n");
+                        }
+                        ThreadUtil.runOnUiThread(() -> {
+                            tvMsg.setText(sb.toString());
+                        });
+                    }
+                } catch (Exception e) {
+                    ThreadUtil.runOnUiThread(() -> {
+                        tvMsg.setText(e.getMessage());
+                    });
+                }
+            });
         } else {
             tvMsg.setText("请先签名生成新Apk！");
         }
@@ -275,6 +380,10 @@ public class SignedController implements Initializable {
         }
         if (!isApkOk) {
             tvMsg.setText("待签名的Apk异常，请重新选择！");
+            return false;
+        }
+        if (isChannel && Utils.isEmpty(channelKey)) {
+            tvMsg.setText("渠道前缀不能为空！");
             return false;
         }
         if (isChannel && channelList.isEmpty()) {

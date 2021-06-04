@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.TilePane;
 import util.FileUtil;
 import util.Utils;
@@ -25,7 +26,8 @@ import java.util.ResourceBundle;
  * Desc:
  */
 public class ChannelController implements Initializable {
-
+    @FXML
+    private TextField tfChannelKey;
     @FXML
     private TextArea tfChannel;
     @FXML
@@ -35,7 +37,6 @@ public class ChannelController implements Initializable {
 
     private File channelFile;
     private File selectedFile;
-    private List<String> channelList = new ArrayList<>();
 
     private List<String> selectedList = new ArrayList<>();
 
@@ -50,8 +51,7 @@ public class ChannelController implements Initializable {
             } else {
                 String selects = FileUtil.readText(selectedFile.getPath());
                 if (!Utils.isEmpty(selects)) {
-                    selectedList.clear();
-                    channelList.addAll(Arrays.asList(selects.split(";")));
+                    selectedList.addAll(Arrays.asList(selects.split(";")));
                 }
             }
             channelFile = new File(System.getProperty("user.dir") + "/channel.txt");
@@ -59,9 +59,11 @@ public class ChannelController implements Initializable {
                 channelFile.createNewFile();
             } else {
                 String channels = FileUtil.readText(channelFile.getPath());
-                if (!Utils.isEmpty(channels)) {
-                    tfChannel.setText(channels);
-                    updateChannels(channels);
+                if (!Utils.isEmpty(channels) && channels.contains("_")) {
+                    String[] array = channels.split("_");
+                    tfChannelKey.setText(array[0]);
+                    tfChannel.setText(array[1]);
+                    updateChannels(array[1]);
                 }
             }
         } catch (IOException e) {
@@ -71,16 +73,10 @@ public class ChannelController implements Initializable {
 
 
     private void updateChannels(String channels) {
-        channelList.clear();
         tilePane.getChildren().clear();
         checkBoxList.clear();
         String[] channelArray = channels.split(";");
         for (String channel : channelArray) {
-            if (!channelList.contains(channel)) {
-                channelList.add(channel);
-            }
-        }
-        for (String channel : channelList) {
             CheckBox checkBox = new CheckBox(channel);
             checkBox.setSelected(selectedList.contains(channel));
             checkBoxList.add(checkBox);
@@ -99,11 +95,21 @@ public class ChannelController implements Initializable {
 
     @FXML
     private void doRefresh(ActionEvent actionEvent) {
+        String channelKey = tfChannelKey.getText();
+        if (Utils.isEmpty(channelKey)) {
+            tvConsole.setText("渠道前缀标识不能为空！");
+            return;
+        }
         String channels = tfChannel.getText();
-        FileUtil.writeTxt(channelFile.getPath(), channels);
+        if (Utils.isEmpty(channels)) {
+            tvConsole.setText("渠道配置不能为空！");
+            return;
+        }
+        FileUtil.writeTxt(channelFile.getPath(), channelKey + "_" + channels);
         selectedList.clear();
         FileUtil.writeTxt(selectedFile.getPath(), "");
         updateChannels(channels);
+        tvConsole.setText("渠道配置已更新，请重新选择并保存！");
     }
 
     @FXML
@@ -133,5 +139,6 @@ public class ChannelController implements Initializable {
         }
         System.out.println(sb);
         FileUtil.writeTxt(selectedFile.getPath(), sb.toString());
+        tvConsole.setText("渠道选择配置保存成功！");
     }
 }

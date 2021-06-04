@@ -11,31 +11,19 @@ public class Utils {
     }
 
 
-    public static String exeCmd(String commandStr) {
+    public static String exeCmd(String commandStr) throws Exception {
         System.out.println("exeCmd: " + commandStr);
         BufferedReader br = null;
-        try {
-            Process p = Runtime.getRuntime().exec(commandStr);
-            br = new BufferedReader(new InputStreamReader(p.getInputStream(), "GBK"));
-            String line;
-            StringBuilder sb = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            System.out.println("exeCmd：" + sb.toString());
-            return sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        Process p = Runtime.getRuntime().exec(commandStr);
+        br = new BufferedReader(new InputStreamReader(p.getInputStream(), "GBK"));
+        String line;
+        StringBuilder sb = new StringBuilder();
+        while ((line = br.readLine()) != null) {
+            sb.append(line + "\n");
         }
-        return "";
+        System.out.println("exeCmd：" + sb.toString());
+        br.close();
+        return sb.toString();
     }
 
 
