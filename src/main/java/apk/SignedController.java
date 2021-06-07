@@ -101,7 +101,8 @@ public class SignedController implements Initializable {
             if (channelStage == null) {
                 try {
                     channelStage = new Stage();//创建舞台；
-                    Parent target = FXMLLoader.load(getClass().getResource("../fxml/apk_channel.fxml"));
+
+                    Parent target = FXMLLoader.load(getClass().getResource("/fxml/apk_channel.fxml"));
                     channelStage.setScene(new Scene(target)); //将场景载入舞台；
                     channelStage.setTitle("Apk渠道配置");
                     // 存放Scene
@@ -218,7 +219,7 @@ public class SignedController implements Initializable {
                             });
                         }
                     } else {
-                        String msg = signV1(apkPath, signDirectory.getAbsolutePath(),"");
+                        String msg = signV1(apkPath, signDirectory.getAbsolutePath(), "");
                         Platform.runLater(() -> {
                             tvMsg.setText(msg);
                         });
