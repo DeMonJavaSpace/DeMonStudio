@@ -10,7 +10,7 @@
 
 ### 下载使用
 
-[DeMonStudio.zip](https://github.com/DeMonJavaSpace/DeMonStudio/raw/master/DeMonStudio.zip)
+[DeMonStudio.7z](https://github.com/DeMonJavaSpace/DeMonStudio/raw/master/DeMonStudio.7z)
 
 ### 使用截图
 
