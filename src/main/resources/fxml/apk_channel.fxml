@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.TilePane?>
-
 <AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="apk.ChannelController">
     <children>
-        <Label layoutX="22.0" layoutY="22.0" text="渠道：多个渠道使用;隔开，填完后点击刷新"/>
-        <TextArea fx:id="tfChannel" layoutX="16.0" layoutY="84.0" prefHeight="145.0" prefWidth="570.0" wrapText="true"/>
+        <Label layoutX="20.0" layoutY="10.0" text="1.多个渠道使用;隔开，最好不要包含特殊字符，填完后点击刷新&#010;2.渠道前缀标识中必须含有channel" textFill="#d33737"/>
+        <TextArea fx:id="tfChannel" layoutX="16.0" layoutY="84.0" prefHeight="145.0" prefWidth="570.0" promptText="多个渠道使用;隔开，填完后点击刷新" wrapText="true"/>
         <Button layoutX="401.0" layoutY="52.0" mnemonicParsing="false" onAction="#doRefresh" text="保存&amp;刷新"/>
         <Button layoutX="14.0" layoutY="275.0" mnemonicParsing="false" onAction="#doAll" text="全选"/>
         <Button layoutX="66.0" layoutY="275.0" mnemonicParsing="false" onAction="#doAllNo" text="全不选"/>
@@ -27,6 +24,6 @@
         <Label layoutX="16.0" layoutY="243.0" text="Console:"/>
         <Label fx:id="tvConsole" layoutX="72.0" layoutY="243.0" textFill="#d33737"/>
         <Label layoutX="22.0" layoutY="56.0" text="渠道前缀标识"/>
-        <TextField layoutX="110.0" layoutY="52.0" text="cztchannel" fx:id="tfChannelKey"/>
+        <TextField fx:id="tfChannelKey" layoutX="110.0" layoutY="52.0" prefWidth="220.0" promptText="渠道前缀必须带有channel" text="cztchannel"/>
     </children>
 </AnchorPane>

@@ -1,1 +1,1 @@
-apkchannel_default;huawei;vivo;xiaomi;oppo;meizu;
+apkchannel_default;huawei;vivo;xiaomi;oppo;meizu;123_234;

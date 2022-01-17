@@ -1,1 +1,1 @@
-huawei;vivo;
+default;huawei;vivo;xiaomi;oppo;meizu;123;

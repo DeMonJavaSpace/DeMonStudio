@@ -6,6 +6,8 @@ import net.lingala.zip4j.model.ZipParameters;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author DeMon
@@ -180,6 +182,33 @@ public class FileUtil {
             channelFile.delete();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static String checkChannel(File file) {
+        File unzipfile = new File(file.getParent() + "\\" + System.currentTimeMillis());
+        try {
+            ZipFile zipFile = new ZipFile(file);
+            unzipfile.mkdirs();
+            zipFile.extractAll(unzipfile.getAbsolutePath());
+            File meatinfDir = new File(unzipfile.getAbsolutePath() + "\\" + "META-INF");
+            if (meatinfDir.exists() && meatinfDir.isDirectory()) {
+                List<String> meatinfStrings = Arrays.asList(meatinfDir.list((file1, filename) -> filename.contains("channel_")));
+                if (meatinfStrings.size() == 0) {
+                    return "该Apk没有写入任何渠道！";
+                } else if (meatinfStrings.size() == 1) {
+                    return "该Apk写入渠道正常~" + meatinfStrings;
+                } else {
+                    return "该Apk检测出多个渠道，异常！" + meatinfStrings;
+                }
+            } else {
+                return "Apk文件异常~";
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } finally {
+            deleteDir(unzipfile);
         }
     }
 

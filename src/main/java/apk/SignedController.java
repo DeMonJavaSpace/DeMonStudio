@@ -14,13 +14,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.FileUtils;
 import util.*;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,6 +40,8 @@ public class SignedController implements Initializable {
     private RadioButton rbYes;
     @FXML
     private RadioButton rbNo;
+    @FXML
+    private Label tvChannel;
 
     private boolean isKeyOk = false;
     private boolean isApkOk = false;
@@ -86,8 +84,8 @@ public class SignedController implements Initializable {
             channelKey = channels.split("_")[0];
         }
         Log.i(TAG, "channelKey: " + channelKey);
-
         String selectedChannels = FileUtil.readText(System.getProperty("user.dir") + "/channel_selected.txt");
+        tvChannel.setText(selectedChannels);
         Log.i(TAG, "selectedChannels: " + selectedChannels);
         channelList.clear();
         if (!Utils.isEmpty(selectedChannels)) {
@@ -150,8 +148,7 @@ public class SignedController implements Initializable {
         } else {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         }
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("XML", "*.xml")
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("XML", "*.xml")
 
         );
         File keyFile = fileChooser.showOpenDialog(getStage());
@@ -173,8 +170,7 @@ public class SignedController implements Initializable {
         } else {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         }
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("APK", "*.apk")
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("APK", "*.apk")
 
         );
         File apkFile = fileChooser.showOpenDialog(getStage());
@@ -195,71 +191,7 @@ public class SignedController implements Initializable {
             }
         }
     }
-
-
-    public void signOld(ActionEvent actionEvent) {
-        if (checkStatus()) {
-            ThreadUtil.runOnIOThread(() -> {
-                String apkPath = tfApk.getText();
-                File apkFile = new File(apkPath);
-                File signDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_signv1");
-                signDirectory.mkdirs();
-                try {
-                    if (isChannel) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String channel : channelList) {
-                            Platform.runLater(() -> {
-                                sb.append(channel + "渠道开始...\n");
-                                tvMsg.setText(sb.toString());
-                            });
-                            String msg = signV1(apkPath, signDirectory.getAbsolutePath(), channel);
-                            sb.append(msg);
-                            Platform.runLater(() -> {
-                                tvMsg.setText(sb.toString());
-                            });
-                        }
-                    } else {
-                        String msg = signV1(apkPath, signDirectory.getAbsolutePath(), "");
-                        Platform.runLater(() -> {
-                            tvMsg.setText(msg);
-                        });
-                    }
-                    tfSign.setText(signDirectory.getAbsolutePath());
-                } catch (Exception e) {
-                    Platform.runLater(() -> {
-                        tvMsg.setText(e.getMessage());
-                    });
-                }
-            });
-        }
-    }
-
-
-    private String signV1(String apkPath, String signDirectory, String channel) throws Exception {
-        String signApkPath = signDirectory + "\\" + FileUtil.createNewFileName(new File(apkPath), channel);
-        File signApk = new File(signApkPath);
-        if (signApk.exists()) {
-            signApk.delete();
-        }
-        String cmd = "jarsigner -verbose -keystore " + KeyConfig.getInstance().getPath()
-                + " -storepass " + KeyConfig.getInstance().getStorePassword()
-                + " -keypass " + KeyConfig.getInstance().getKeyPassword()
-                + " -signedjar "
-                + signApkPath + " "
-                + apkPath + " "
-                + KeyConfig.getInstance().getKeyAlias()
-                + " -sigfile CERT";
-        String msg = Utils.exeCmd(cmd);
-        Log.i(TAG, "signV1 sign: " + msg);
-        if (new File(signApkPath).exists() && msg.contains("META-INF/MANIFEST.MF")) {
-            FileUtil.addChannel(signApkPath, channelKey, channel);
-            return apkPath + "-旧v1签名成功！\n";
-        } else {
-            return apkPath + "-旧v1签名失败！可能存在的原因：\n1.密钥别名or密码配置错误！\n2.已经签名过的Apk，无法使用旧v1签名重新签名。\n";
-        }
-    }
-
-
+    
     public void signNew(ActionEvent actionEvent) {
         if (checkStatus()) {
             ThreadUtil.runOnIOThread(() -> {
@@ -269,7 +201,7 @@ public class SignedController implements Initializable {
                 channelDirectory.mkdirs();
                 File alignDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_align");
                 alignDirectory.mkdirs();
-                File signDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_signv2");
+                File signDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_signed");
                 signDirectory.mkdirs();
                 try {
                     if (isChannel) {
@@ -281,14 +213,14 @@ public class SignedController implements Initializable {
                             });
                             String channelApkPath = FileUtil.copyFile(apkPath, channelDirectory.getAbsolutePath() + "\\" + FileUtil.createNewFileName(apkFile, channel));
                             FileUtil.addChannel(channelApkPath, channelKey, channel);
-                            String msg = signedV2(channelApkPath, alignDirectory.getAbsolutePath(), signDirectory.getAbsolutePath());
+                            String msg = signed(channelApkPath, alignDirectory.getAbsolutePath(), signDirectory.getAbsolutePath());
                             sb.append(msg);
                             Platform.runLater(() -> {
                                 tvMsg.setText(sb.toString());
                             });
                         }
                     } else {
-                        String msg = signedV2(apkPath, alignDirectory.getAbsolutePath(), signDirectory.getAbsolutePath());
+                        String msg = signed(apkPath, alignDirectory.getAbsolutePath(), signDirectory.getAbsolutePath());
                         Platform.runLater(() -> {
                             tvMsg.setText(msg);
                         });
@@ -305,7 +237,7 @@ public class SignedController implements Initializable {
         }
     }
 
-    private String signedV2(String apkPath, String alignDirectory, String signDirectory) throws Exception {
+    private String signed(String apkPath, String alignDirectory, String signDirectory) throws Exception {
         String apkName = new File(apkPath).getName();
         StringBuilder sb = new StringBuilder();
         //对齐
@@ -320,13 +252,7 @@ public class SignedController implements Initializable {
             return sb.toString();
         }
         String signPath = signDirectory + "\\" + apkName;
-        String cmd = "java -jar apksigner.jar sign  --ks " + KeyConfig.getInstance().getPath()
-                + " --ks-key-alias " + KeyConfig.getInstance().getKeyAlias()
-                + " --ks-pass pass:" + KeyConfig.getInstance().getStorePassword()
-                + " --key-pass pass:" + KeyConfig.getInstance().getKeyPassword()
-                + " --out "
-                + signPath + " "
-                + alignapk;
+        String cmd = "java -jar apksigner.jar sign  --ks " + KeyConfig.getInstance().getPath() + " --ks-key-alias " + KeyConfig.getInstance().getKeyAlias() + " --ks-pass pass:" + KeyConfig.getInstance().getStorePassword() + " --key-pass pass:" + KeyConfig.getInstance().getKeyPassword() + " --out " + signPath + " " + alignapk;
         String msg = Utils.exeCmd(cmd);
         Log.i(TAG, "signedV2 sign: " + msg);
         if (new File(signPath).exists()) {
@@ -355,9 +281,134 @@ public class SignedController implements Initializable {
                         String msg = Utils.exeCmd("java -jar apksigner.jar verify -v " + apkFile.getAbsolutePath());
                         sb.append(apkFile.getName() + ": ");
                         String[] msgs = msg.split("\n");
+                        if (msgs.length > 3) {
+                            for (int i = 0; i < 4; i++) {
+                                sb.append(msgs[i] + "\n");
+                            }
+                        } else {
+                            sb.append("签名异常~\n" + msg);
+                        }
+                        ThreadUtil.runOnUiThread(() -> {
+                            tvMsg.setText(sb.toString());
+                        });
+                    }
+                } catch (Exception e) {
+                    ThreadUtil.runOnUiThread(() -> {
+                        tvMsg.setText(e.getMessage());
+                    });
+                }
+            });
+        } else {
+            tvMsg.setText("请先签名生成新Apk！");
+        }
+    }
+
+    public void installApk(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("选择要安装的Apk");
+        File file = new File(tfApk.getText()).getParentFile();
+        if (file != null && file.exists()) {
+            fileChooser.setInitialDirectory(file);
+        } else {
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        }
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("APK", "*.apk")
+
+        );
+        File apkFile = fileChooser.showOpenDialog(getStage());
+        if (apkFile != null) {
+            ThreadUtil.runOnIOThread(() -> {
+                String align = "adbapk install -r " + apkFile.getAbsolutePath();
+                StringBuilder sb = new StringBuilder();
+                try {
+                    String msg = Utils.exeCmd(align);
+                    sb.append(apkFile.getAbsolutePath() + ": \n");
+                    sb.append(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    sb.append(e.getLocalizedMessage());
+                }
+                ThreadUtil.runOnUiThread(() -> {
+                    tvMsg.setText(sb.toString());
+                });
+            });
+        }
+    }
+
+    public void checkApkSigned(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("选择要校验的Apk");
+        File file = new File(tfApk.getText()).getParentFile();
+        if (file != null && file.exists()) {
+            fileChooser.setInitialDirectory(file);
+        } else {
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        }
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("APK", "*.apk")
+
+        );
+        File apkFile = fileChooser.showOpenDialog(getStage());
+        if (apkFile != null) {
+            ThreadUtil.runOnIOThread(() -> {
+                StringBuilder sb = new StringBuilder();
+                try {
+                    String msg = Utils.exeCmd("java -jar apksigner.jar verify -v " + apkFile.getAbsolutePath());
+                    sb.append(apkFile.getAbsolutePath() + ": ");
+                    String[] msgs = msg.split("\n");
+                    if (msgs.length > 3) {
                         for (int i = 0; i < 4; i++) {
                             sb.append(msgs[i] + "\n");
                         }
+                    } else {
+                        sb.append("签名异常~\n" + msg);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    sb.append(e.getLocalizedMessage());
+                }
+                ThreadUtil.runOnUiThread(() -> {
+                    tvMsg.setText(sb.toString());
+                });
+            });
+        }
+    }
+
+
+    public void checkApkChannel(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("选择要校验的Apk");
+        File file = new File(tfApk.getText()).getParentFile();
+        if (file != null && file.exists()) {
+            fileChooser.setInitialDirectory(file);
+        } else {
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        }
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("APK", "*.apk")
+
+        );
+        File apkFile = fileChooser.showOpenDialog(getStage());
+        if (apkFile != null) {
+            ThreadUtil.runOnIOThread(() -> {
+                StringBuilder sb = new StringBuilder();
+                sb.append(apkFile.getAbsolutePath() + ":\n");
+                String msg = FileUtil.checkChannel(apkFile);
+                sb.append(msg);
+                ThreadUtil.runOnUiThread(() -> {
+                    tvMsg.setText(sb.toString());
+                });
+            });
+        }
+    }
+
+    public void checkChannel(ActionEvent actionEvent) {
+        if (!Utils.isEmpty(tfSign.getText())) {
+            ThreadUtil.runOnIOThread(() -> {
+                try {
+                    File[] apkFiles = new File(tfSign.getText()).listFiles((file1, filename) -> filename.endsWith(".apk"));
+                    StringBuilder sb = new StringBuilder();
+                    for (File apkFile : apkFiles) {
+                        sb.append(apkFile.getAbsolutePath() + ": \n");
+                        sb.append(FileUtil.checkChannel(apkFile) + "\n");
                         ThreadUtil.runOnUiThread(() -> {
                             tvMsg.setText(sb.toString());
                         });

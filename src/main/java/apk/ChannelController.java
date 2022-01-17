@@ -77,7 +77,8 @@ public class ChannelController implements Initializable {
         checkBoxList.clear();
         String[] channelArray = channels.split(";");
         for (String channel : channelArray) {
-            CheckBox checkBox = new CheckBox(channel);
+            CheckBox checkBox = new CheckBox();
+            checkBox.setText(channel);
             checkBox.setSelected(selectedList.contains(channel));
             checkBoxList.add(checkBox);
             checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -98,6 +99,10 @@ public class ChannelController implements Initializable {
         String channelKey = tfChannelKey.getText();
         if (Utils.isEmpty(channelKey)) {
             tvConsole.setText("渠道前缀标识不能为空！");
+            return;
+        }
+        if (!channelKey.contains("channel")){
+            tvConsole.setText("渠道前缀标识中必须含有channel！");
             return;
         }
         String channels = tfChannel.getText();
