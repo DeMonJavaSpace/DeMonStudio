@@ -6,6 +6,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
+import util.Log;
+import util.Utils;
+import widget.NumTextField;
 
 import java.io.IOException;
 import java.net.URL;
@@ -13,7 +16,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
-
+    private static final String TAG = "MainController";
     @FXML
     public MenuBar menuBar;
     @FXML
@@ -26,10 +29,19 @@ public class MainController implements Initializable {
     public Menu menu4;
     @FXML
     public ScrollPane main_pane;
+    @FXML
+    public NumTextField tfText;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initMenus();
+        tfText.textProperty().addListener((observable, oldValue, newValue) -> {
+            Log.i(TAG, newValue);
+            int value = Integer.parseInt(newValue);
+            if (value <= 0 || value > 525600) {
+                tfText.setText("30");
+            }
+        });
     }
 
     /**
@@ -76,6 +88,33 @@ public class MainController implements Initializable {
         try {
             main_pane.setContent(FXMLLoader.load(Objects.requireNonNull(getClass().getResource(xml))));
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void add(ActionEvent event) {
+        int value = Integer.parseInt(tfText.getText());
+        tfText.setText(value + 30 + "");
+    }
+
+    public void reduce(ActionEvent event) {
+        int value = Integer.parseInt(tfText.getText());
+        tfText.setText(value - 30 + "");
+    }
+
+    public void shutdown(ActionEvent event) {
+        try {
+            int value = Integer.parseInt(tfText.getText()) * 60;
+            Utils.exeCmd("Shutdown.exe -s -t " + value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void cancel(ActionEvent event) {
+        try {
+            Utils.exeCmd("Shutdown.exe /a");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

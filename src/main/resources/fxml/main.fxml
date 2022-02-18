@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
+
+<?import widget.NumTextField?>
 <AnchorPane fx:id="root" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
-   <children>
-       <MenuBar fx:id="menuBar" prefWidth="800.0">
-           <menus>
-               <Menu fx:id="menu1" />
-               <Menu fx:id="menu2" text="编码">
-                   <MenuItem text="AES" onAction="#openAES"/>
-                   <MenuItem text="DES" onAction="#openDES"/>
-                   <MenuItem text="MD5" onAction="#openMD5"/>
-                   <MenuItem text="Base64" onAction="#openBase64"/>
-               </Menu>
-               <Menu fx:id="menu3" />
-               <Menu fx:id="menu4" />
-           </menus>
-       </MenuBar>
-      <ScrollPane layoutY="25.0" prefHeight="475.0" prefWidth="800.0" fx:id="main_pane"/>
-   </children>
+    <children>
+        <MenuBar fx:id="menuBar" prefWidth="800.0">
+            <menus>
+                <Menu fx:id="menu1"/>
+                <Menu fx:id="menu2" text="编码">
+                    <items>
+                        <MenuItem onAction="#openAES" text="AES"/>
+                        <MenuItem onAction="#openDES" text="DES"/>
+                        <MenuItem onAction="#openMD5" text="MD5"/>
+                        <MenuItem onAction="#openBase64" text="Base64"/>
+                    </items>
+                </Menu>
+                <Menu fx:id="menu3"/>
+                <Menu fx:id="menu4"/>
+            </menus>
+        </MenuBar>
+        <ScrollPane fx:id="main_pane" layoutY="25.0" prefHeight="475.0" prefWidth="800.0">
+            <content>
+                <AnchorPane prefHeight="470.0" prefWidth="790.0">
+                    <children>
+                        <NumTextField fx:id="tfText" alignment="CENTER" layoutX="346.0" layoutY="119.0" prefHeight="23.0" prefWidth="56.0" text="30"/>
+                        <Button layoutX="420.0" layoutY="119.0" mnemonicParsing="false" onAction="#add" text="+"/>
+                        <Button layoutX="317.0" layoutY="119.0" mnemonicParsing="false" onAction="#reduce" text="-"/>
+                        <Button layoutX="344.0" layoutY="178.0" mnemonicParsing="false" onAction="#shutdown" prefHeight="23.0" prefWidth="61.0" text="关机"/>
+                        <Button layoutX="342.0" layoutY="235.0" mnemonicParsing="false" onAction="#cancel" prefHeight="23.0" prefWidth="65.0" text="取消"/>
+                        <Label layoutX="406.0" layoutY="123.0" text="分"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </ScrollPane>
+    </children>
 </AnchorPane>
