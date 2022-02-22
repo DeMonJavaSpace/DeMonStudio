@@ -10,7 +10,13 @@
     <children>
         <MenuBar fx:id="menuBar" prefWidth="800.0">
             <menus>
-                <Menu fx:id="menu1"/>
+                <Menu fx:id="menu0"/>
+                <Menu fx:id="menu1" text="转换">
+                    <items>
+                        <MenuItem onAction="#openStringReplace" text="字符串替换"/>
+                        <MenuItem onAction="#openDES" text="时间戳"/>
+                    </items>
+                </Menu>
                 <Menu fx:id="menu2" text="编码">
                     <items>
                         <MenuItem onAction="#openAES" text="AES"/>
@@ -25,7 +31,7 @@
         </MenuBar>
         <ScrollPane fx:id="main_pane" layoutY="25.0" prefHeight="475.0" prefWidth="800.0">
             <content>
-                <AnchorPane prefHeight="470.0" prefWidth="790.0">
+                <AnchorPane prefHeight="470.0" prefWidth="790.0" fx:id="home_pane">
                     <children>
                         <NumTextField fx:id="tfText" alignment="CENTER" layoutX="346.0" layoutY="119.0" prefHeight="23.0" prefWidth="56.0" text="30"/>
                         <Button layoutX="420.0" layoutY="119.0" mnemonicParsing="false" onAction="#add" text="+"/>

@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.AnchorPane;
 import util.Log;
 import util.Utils;
 import widget.NumTextField;
@@ -20,6 +21,8 @@ public class MainController implements Initializable {
     @FXML
     public MenuBar menuBar;
     @FXML
+    public Menu menu0;
+    @FXML
     public Menu menu1;
     @FXML
     public Menu menu2;
@@ -29,6 +32,8 @@ public class MainController implements Initializable {
     public Menu menu4;
     @FXML
     public ScrollPane main_pane;
+    @FXML
+    public AnchorPane home_pane;
     @FXML
     public NumTextField tfText;
 
@@ -49,11 +54,11 @@ public class MainController implements Initializable {
      * https://blog.csdn.net/Michean/article/details/103190820
      */
     public void initMenus() {
-        Label label1 = new Label("字符串替换");
+        Label label1 = new Label("首页");
         label1.setOnMouseClicked(event -> {
-            showView("fxml/string_replace.fxml");
+            main_pane.setContent(home_pane);
         });
-        menu1.setGraphic(label1);
+        menu0.setGraphic(label1);
         Label label3 = new Label("二维码");
         label3.setOnMouseClicked(event -> {
             showView("fxml/qr_code.fxml");
@@ -64,6 +69,10 @@ public class MainController implements Initializable {
             showView("fxml/apk_signed.fxml");
         });
         menu4.setGraphic(label4);
+    }
+
+    public void openStringReplace(ActionEvent event) {
+        showView("fxml/string_replace.fxml");
     }
 
     public void openDES(ActionEvent event) {
