@@ -75,6 +75,10 @@ public class MainController implements Initializable {
         showView("fxml/string_replace.fxml");
     }
 
+    public void openTime(ActionEvent event) {
+        showView("fxml/timestamp.fxml");
+    }
+
     public void openDES(ActionEvent event) {
         showView("fxml/coding_des.fxml");
     }

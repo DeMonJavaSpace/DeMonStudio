@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.TilePane;
-import util.FileUtil;
+import util.FileUtils;
 import util.Utils;
 
 import java.io.File;
@@ -49,7 +49,7 @@ public class ChannelController implements Initializable {
             if (!selectedFile.exists()) {
                 selectedFile.createNewFile();
             } else {
-                String selects = FileUtil.readText(selectedFile.getPath());
+                String selects = FileUtils.readText(selectedFile.getPath());
                 if (!Utils.isEmpty(selects)) {
                     selectedList.addAll(Arrays.asList(selects.split(";")));
                 }
@@ -58,7 +58,7 @@ public class ChannelController implements Initializable {
             if (!channelFile.exists()) {
                 channelFile.createNewFile();
             } else {
-                String channels = FileUtil.readText(channelFile.getPath());
+                String channels = FileUtils.readText(channelFile.getPath());
                 if (!Utils.isEmpty(channels) && channels.contains("_")) {
                     String[] array = channels.split("_");
                     tfChannelKey.setText(array[0]);
@@ -110,9 +110,9 @@ public class ChannelController implements Initializable {
             tvConsole.setText("渠道配置不能为空！");
             return;
         }
-        FileUtil.writeTxt(channelFile.getPath(), channelKey + "_" + channels);
+        FileUtils.writeTxt(channelFile.getPath(), channelKey + "_" + channels);
         selectedList.clear();
-        FileUtil.writeTxt(selectedFile.getPath(), "");
+        FileUtils.writeTxt(selectedFile.getPath(), "");
         updateChannels(channels);
         tvConsole.setText("渠道配置已更新，请重新选择并保存！");
     }
@@ -143,7 +143,7 @@ public class ChannelController implements Initializable {
             sb.append(";");
         }
         System.out.println(sb);
-        FileUtil.writeTxt(selectedFile.getPath(), sb.toString());
+        FileUtils.writeTxt(selectedFile.getPath(), sb.toString());
         tvConsole.setText("渠道选择配置保存成功！");
     }
 }

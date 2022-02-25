@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class ByteUtil {
+public class ByteUtils {
     /**
      * 对象转Byte数组
      *

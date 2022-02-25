@@ -4,7 +4,6 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -12,7 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import util.QRCodeUtil;
+import util.QRCodeUtils;
 import util.Utils;
 
 import javax.imageio.ImageIO;
@@ -54,8 +53,8 @@ public class QRController implements Initializable {
             return;
         }
         try {
-            qrCode = QRCodeUtil.createImage(textStr);
-            ivCode.setImage(QRCodeUtil.fxImage(qrCode));
+            qrCode = QRCodeUtils.createImage(textStr);
+            ivCode.setImage(QRCodeUtils.fxImage(qrCode));
         } catch (Exception e) {
             tvConsole.setText(e.getMessage());
             e.printStackTrace();
@@ -89,8 +88,8 @@ public class QRController implements Initializable {
         tfPic.setText(picFile.getAbsolutePath());
         try {
             qrImgCode = qrCode;
-            QRCodeUtil.insertImage(qrImgCode, picFile.getAbsolutePath());
-            ivImgCode.setImage(QRCodeUtil.fxImage(qrImgCode));
+            QRCodeUtils.insertImage(qrImgCode, picFile.getAbsolutePath());
+            ivImgCode.setImage(QRCodeUtils.fxImage(qrImgCode));
         } catch (Exception e) {
             tvConsole.setText(e.getMessage());
             e.printStackTrace();

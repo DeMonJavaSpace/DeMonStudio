@@ -14,7 +14,7 @@
                 <Menu fx:id="menu1" text="转换">
                     <items>
                         <MenuItem onAction="#openStringReplace" text="字符串替换"/>
-                        <MenuItem onAction="#openDES" text="时间戳"/>
+                        <MenuItem onAction="#openTime" text="时间戳"/>
                     </items>
                 </Menu>
                 <Menu fx:id="menu2" text="编码">

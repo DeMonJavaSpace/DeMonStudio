@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import util.MD5Util;
+import util.MD5Utils;
 import util.Utils;
 
 import java.io.File;
@@ -66,9 +66,9 @@ public class MD5Controller implements Initializable {
             File file = new File(textStr);
             String result;
             if (file.exists()) {
-                result = MD5Util.MD5EncodeObject(file);
+                result = MD5Utils.MD5EncodeObject(file);
             } else {
-                result = MD5Util.MD5Encode(textStr);
+                result = MD5Utils.MD5Encode(textStr);
             }
             tfResult1.setText(result.toUpperCase());
             tfResult2.setText(result);

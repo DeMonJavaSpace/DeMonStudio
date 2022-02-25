@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="string.StringController">
+<AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="convert.StringController">
     <children>
         <TextArea fx:id="tfText" layoutX="14.0" layoutY="36.0" prefHeight="160.0" prefWidth="750" wrapText="true"/>
         <Label layoutX="14.0" layoutY="14.0" text="要处理的文本"/>

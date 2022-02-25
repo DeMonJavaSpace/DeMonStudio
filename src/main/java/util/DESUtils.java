@@ -11,7 +11,7 @@ import java.util.Base64;
 /**
  * DES加密实现
  */
-public class DESUtil {
+public class DESUtils {
     /**
      * 偏移变量，DES固定占8位字节
      */
@@ -33,13 +33,13 @@ public class DESUtil {
      */
     private String charset = "UTF-8";
 
-    private static DESUtil instance;
+    private static DESUtils instance;
 
     private Cipher cipher;
 
     private SecretKeyFactory keyFactory;
 
-    private DESUtil() {
+    private DESUtils() {
         try {
             keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
@@ -47,9 +47,9 @@ public class DESUtil {
         }
     }
 
-    public static DESUtil getInstance() {
+    public static DESUtils getInstance() {
         if (instance == null) {
-            instance = new DESUtil();
+            instance = new DESUtils();
         }
         return instance;
     }

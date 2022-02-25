@@ -1,9 +1,7 @@
 package coding;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
-import util.DESUtil;
+import util.DESUtils;
 import util.Utils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,7 +37,7 @@ public class DesController implements Initializable {
 
         cbCode.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println(oldValue + " " + newValue);
-            DESUtil.getInstance().setCharset((String) newValue);
+            DESUtils.getInstance().setCharset((String) newValue);
         });
     }
 
@@ -80,12 +78,12 @@ public class DesController implements Initializable {
         try {
             File file = new File(textStr);
             String result;
-            DESUtil.getInstance().setDesKey(tfKey.getText());
-            DESUtil.getInstance().setIvParameter(tfParameter.getText());
+            DESUtils.getInstance().setDesKey(tfKey.getText());
+            DESUtils.getInstance().setIvParameter(tfParameter.getText());
             if (file.exists()) {
-                result = DESUtil.getInstance().encryptFile(file.getAbsolutePath());
+                result = DESUtils.getInstance().encryptFile(file.getAbsolutePath());
             } else {
-                result = DESUtil.getInstance().encrypt(textStr);
+                result = DESUtils.getInstance().encrypt(textStr);
             }
             System.out.println(result);
             tfResult.setText(result);
@@ -104,12 +102,12 @@ public class DesController implements Initializable {
         try {
             File file = new File(textStr);
             String result;
-            DESUtil.getInstance().setDesKey(tfKey.getText());
-            DESUtil.getInstance().setIvParameter(tfParameter.getText());
+            DESUtils.getInstance().setDesKey(tfKey.getText());
+            DESUtils.getInstance().setIvParameter(tfParameter.getText());
             if (file.exists()) {
-                result = DESUtil.getInstance().decryptFile(file.getAbsolutePath());
+                result = DESUtils.getInstance().decryptFile(file.getAbsolutePath());
             } else {
-                result = DESUtil.getInstance().decrypt(textStr);
+                result = DESUtils.getInstance().decrypt(textStr);
             }
             System.out.println(result);
             tfResult.setText(result);

@@ -1,6 +1,8 @@
 package widget;
 
 import javafx.scene.control.TextField;
+import util.Log;
+import util.TextUtils;
 
 /**
  * @author DeMon
@@ -13,7 +15,8 @@ public class NumTextField extends TextField {
 
     @Override
     public void replaceText(int start, int end, String text) {
-        if (text.matches("[0-9]")) {
+        Log.i(TAG, "replaceText=" + text);
+        if (TextUtils.isDigitsOnly(text)) {
             super.replaceText(start, end, text);
         }
     }
@@ -21,7 +24,8 @@ public class NumTextField extends TextField {
 
     @Override
     public void replaceSelection(String replacement) {
-        if (replacement.matches("[0-9]")) {
+        Log.i(TAG, "replaceSelection=" + replacement);
+        if (TextUtils.isDigitsOnly(replacement)) {
             super.replaceSelection(replacement);
         }
     }

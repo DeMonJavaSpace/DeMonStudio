@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Hashtable;
 
-public class QRCodeUtil {
+public class QRCodeUtils {
     private static final String CHARSET = "utf-8";
     private static final String FORMAT_NAME = "JPG";
     // 二维码尺寸

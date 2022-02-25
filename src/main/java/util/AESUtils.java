@@ -1,12 +1,9 @@
 package util;
 
 import javax.crypto.*;
-import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -17,7 +14,7 @@ import java.util.Base64;
  * E-mail 757454343@qq.com
  * Desc: AES加密实现
  */
-public class AESUtil {
+public class AESUtils {
     /**
      * 偏移变量，AES固定占16位字节
      */
@@ -39,7 +36,7 @@ public class AESUtil {
      */
     private String charset = "UTF-8";
 
-    private static AESUtil instance;
+    private static AESUtils instance;
 
     private Cipher cipher;
 
@@ -47,7 +44,7 @@ public class AESUtil {
 
     private int digits = 128;
 
-    private AESUtil() {
+    private AESUtils() {
         try {
             //1.构造密钥生成器，指定为AES算法,不区分大小写
             keyGenerator = KeyGenerator.getInstance(ALGORITHM);
@@ -56,9 +53,9 @@ public class AESUtil {
         }
     }
 
-    public static AESUtil getInstance() {
+    public static AESUtils getInstance() {
         if (instance == null) {
-            instance = new AESUtil();
+            instance = new AESUtils();
         }
         return instance;
     }

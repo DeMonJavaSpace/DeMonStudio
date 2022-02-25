@@ -8,13 +8,13 @@ import java.security.MessageDigest;
  * 大写 = toUpperCase
  * 16位加密 = 32位加密.substring(8, 24)
  */
-public class MD5Util {
+public class MD5Utils {
 
     /**
      * MD5加密String
      */
     public static String MD5Encode(String origin) throws Exception {
-        return ByteUtil.bytesToHexString(MD5Bytes(origin));
+        return ByteUtils.bytesToHexString(MD5Bytes(origin));
     }
 
     /**
@@ -32,7 +32,7 @@ public class MD5Util {
      */
     public static byte[] MD5Bytes(Object object) throws Exception {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
-        byte[] md5Bytes = md5.digest(ByteUtil.objectToBytes(object));
+        byte[] md5Bytes = md5.digest(ByteUtils.objectToBytes(object));
         return md5Bytes;
     }
 
@@ -43,6 +43,6 @@ public class MD5Util {
      */
     public static String MD5EncodeObject(Object object) throws Exception {
         byte[] md5Bytes = MD5Bytes(object);
-        return ByteUtil.bytesToHexString(md5Bytes);
+        return ByteUtils.bytesToHexString(md5Bytes);
     }
 }

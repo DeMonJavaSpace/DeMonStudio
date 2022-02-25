@@ -79,12 +79,12 @@ public class SignedController implements Initializable {
     }
 
     private void initChannel() {
-        String channels = FileUtil.readText(System.getProperty("user.dir") + "/channel.txt");
+        String channels = FileUtils.readText(System.getProperty("user.dir") + "/channel.txt");
         if (!Utils.isEmpty(channels) && channels.contains("_")) {
             channelKey = channels.split("_")[0];
         }
         Log.i(TAG, "channelKey: " + channelKey);
-        String selectedChannels = FileUtil.readText(System.getProperty("user.dir") + "/channel_selected.txt");
+        String selectedChannels = FileUtils.readText(System.getProperty("user.dir") + "/channel_selected.txt");
         tvChannel.setText(selectedChannels);
         Log.i(TAG, "selectedChannels: " + selectedChannels);
         channelList.clear();
@@ -194,14 +194,14 @@ public class SignedController implements Initializable {
     
     public void signNew(ActionEvent actionEvent) {
         if (checkStatus()) {
-            ThreadUtil.runOnIOThread(() -> {
+            ThreadUtils.runOnIOThread(() -> {
                 String apkPath = tfApk.getText();
                 File apkFile = new File(apkPath);
-                File channelDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_channel");
+                File channelDirectory = new File(apkFile.getParentFile(), FileUtils.getFileName(apkFile) + "_channel");
                 channelDirectory.mkdirs();
-                File alignDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_align");
+                File alignDirectory = new File(apkFile.getParentFile(), FileUtils.getFileName(apkFile) + "_align");
                 alignDirectory.mkdirs();
-                File signDirectory = new File(apkFile.getParentFile(), FileUtil.getFileName(apkFile) + "_signed");
+                File signDirectory = new File(apkFile.getParentFile(), FileUtils.getFileName(apkFile) + "_signed");
                 signDirectory.mkdirs();
                 try {
                     if (isChannel) {
@@ -211,8 +211,8 @@ public class SignedController implements Initializable {
                                 sb.append(channel + "渠道开始...\n");
                                 tvMsg.setText(sb.toString());
                             });
-                            String channelApkPath = FileUtil.copyFile(apkPath, channelDirectory.getAbsolutePath() + "\\" + FileUtil.createNewFileName(apkFile, channel));
-                            FileUtil.addChannel(channelApkPath, channelKey, channel);
+                            String channelApkPath = FileUtils.copyFile(apkPath, channelDirectory.getAbsolutePath() + "\\" + FileUtils.createNewFileName(apkFile, channel));
+                            FileUtils.addChannel(channelApkPath, channelKey, channel);
                             String msg = signed(channelApkPath, alignDirectory.getAbsolutePath(), signDirectory.getAbsolutePath());
                             sb.append(msg);
                             Platform.runLater(() -> {
@@ -231,8 +231,8 @@ public class SignedController implements Initializable {
                         tvMsg.setText(e.getMessage());
                     });
                 }
-                FileUtil.deleteDir(alignDirectory);
-                FileUtil.deleteDir(channelDirectory);
+                FileUtils.deleteDir(alignDirectory);
+                FileUtils.deleteDir(channelDirectory);
             });
         }
     }
@@ -273,7 +273,7 @@ public class SignedController implements Initializable {
 
     public void startStatus(ActionEvent actionEvent) {
         if (!Utils.isEmpty(tfSign.getText())) {
-            ThreadUtil.runOnIOThread(() -> {
+            ThreadUtils.runOnIOThread(() -> {
                 try {
                     File[] apkFiles = new File(tfSign.getText()).listFiles((file1, filename) -> filename.endsWith(".apk"));
                     StringBuilder sb = new StringBuilder();
@@ -288,12 +288,12 @@ public class SignedController implements Initializable {
                         } else {
                             sb.append("签名异常~\n" + msg);
                         }
-                        ThreadUtil.runOnUiThread(() -> {
+                        ThreadUtils.runOnUiThread(() -> {
                             tvMsg.setText(sb.toString());
                         });
                     }
                 } catch (Exception e) {
-                    ThreadUtil.runOnUiThread(() -> {
+                    ThreadUtils.runOnUiThread(() -> {
                         tvMsg.setText(e.getMessage());
                     });
                 }
@@ -317,7 +317,7 @@ public class SignedController implements Initializable {
         );
         File apkFile = fileChooser.showOpenDialog(getStage());
         if (apkFile != null) {
-            ThreadUtil.runOnIOThread(() -> {
+            ThreadUtils.runOnIOThread(() -> {
                 String align = "adbapk install -r " + apkFile.getAbsolutePath();
                 StringBuilder sb = new StringBuilder();
                 try {
@@ -328,7 +328,7 @@ public class SignedController implements Initializable {
                     e.printStackTrace();
                     sb.append(e.getLocalizedMessage());
                 }
-                ThreadUtil.runOnUiThread(() -> {
+                ThreadUtils.runOnUiThread(() -> {
                     tvMsg.setText(sb.toString());
                 });
             });
@@ -349,7 +349,7 @@ public class SignedController implements Initializable {
         );
         File apkFile = fileChooser.showOpenDialog(getStage());
         if (apkFile != null) {
-            ThreadUtil.runOnIOThread(() -> {
+            ThreadUtils.runOnIOThread(() -> {
                 StringBuilder sb = new StringBuilder();
                 try {
                     String msg = Utils.exeCmd("java -jar apksigner.jar verify -v " + apkFile.getAbsolutePath());
@@ -366,7 +366,7 @@ public class SignedController implements Initializable {
                     e.printStackTrace();
                     sb.append(e.getLocalizedMessage());
                 }
-                ThreadUtil.runOnUiThread(() -> {
+                ThreadUtils.runOnUiThread(() -> {
                     tvMsg.setText(sb.toString());
                 });
             });
@@ -388,12 +388,12 @@ public class SignedController implements Initializable {
         );
         File apkFile = fileChooser.showOpenDialog(getStage());
         if (apkFile != null) {
-            ThreadUtil.runOnIOThread(() -> {
+            ThreadUtils.runOnIOThread(() -> {
                 StringBuilder sb = new StringBuilder();
                 sb.append(apkFile.getAbsolutePath() + ":\n");
-                String msg = FileUtil.checkChannel(apkFile);
+                String msg = FileUtils.checkChannel(apkFile);
                 sb.append(msg);
-                ThreadUtil.runOnUiThread(() -> {
+                ThreadUtils.runOnUiThread(() -> {
                     tvMsg.setText(sb.toString());
                 });
             });
@@ -402,19 +402,19 @@ public class SignedController implements Initializable {
 
     public void checkChannel(ActionEvent actionEvent) {
         if (!Utils.isEmpty(tfSign.getText())) {
-            ThreadUtil.runOnIOThread(() -> {
+            ThreadUtils.runOnIOThread(() -> {
                 try {
                     File[] apkFiles = new File(tfSign.getText()).listFiles((file1, filename) -> filename.endsWith(".apk"));
                     StringBuilder sb = new StringBuilder();
                     for (File apkFile : apkFiles) {
                         sb.append(apkFile.getAbsolutePath() + ": \n");
-                        sb.append(FileUtil.checkChannel(apkFile) + "\n");
-                        ThreadUtil.runOnUiThread(() -> {
+                        sb.append(FileUtils.checkChannel(apkFile) + "\n");
+                        ThreadUtils.runOnUiThread(() -> {
                             tvMsg.setText(sb.toString());
                         });
                     }
                 } catch (Exception e) {
-                    ThreadUtil.runOnUiThread(() -> {
+                    ThreadUtils.runOnUiThread(() -> {
                         tvMsg.setText(e.getMessage());
                     });
                 }

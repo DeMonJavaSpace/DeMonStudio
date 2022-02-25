@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import widget.NumTextField?>
+<AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="convert.TimestampController">
+    <children>
+        <Label layoutX="132.0" layoutY="62.0" text="现在" />
+        <Label layoutX="102.0" layoutY="109.0" text="时间戳（毫秒）" />
+        <Label layoutX="120.0" layoutY="217.0" text="日期时间" />
+        <Label layoutX="108.0" layoutY="160.0" text="时间戳（秒）" />
+        <NumTextField fx:id="etMillisecond" layoutX="186.0" layoutY="105.0" />
+        <NumTextField fx:id="etSecond" layoutX="186.0" layoutY="156.0" />
+        <Button layoutX="356.0" layoutY="105.0" mnemonicParsing="false" onAction="#change1" text="转换" />
+        <Button layoutX="356.0" layoutY="156.0" mnemonicParsing="false" onAction="#change2" text="转换" />
+        <DatePicker fx:id="datePicker" editable="false" layoutX="186.0" layoutY="194.0" />
+        <Button layoutX="402.0" layoutY="206.0" mnemonicParsing="false" onAction="#change3" text="转换" />
+        <TextField fx:id="etTime1" editable="false" layoutX="402.0" layoutY="105.0" />
+        <TextField fx:id="etTime2" editable="false" layoutX="402.0" layoutY="156.0" />
+        <TextField fx:id="etTime3" editable="false" layoutX="494.0" layoutY="194.0" />
+        <TextField fx:id="etTime4" editable="false" layoutX="494.0" layoutY="225.0" />
+        <Label layoutX="458.0" layoutY="199.0" text="毫秒" />
+        <Label layoutX="464.0" layoutY="229.0" text="秒" />
+        <Label fx:id="tvConsole" layoutX="70.0" layoutY="367.0" textFill="#d33737" />
+        <TextField fx:id="etDateTime" editable="false" layoutX="186.0" layoutY="58.0" />
+        <TextField fx:id="etTimeStamp" editable="false" layoutX="357.0" layoutY="58.0" />
+        <ComboBox fx:id="cbHour" layoutX="186.0" layoutY="225.0" prefHeight="23.0" prefWidth="58.0" promptText="0" value="0" />
+        <ComboBox fx:id="cbMin" layoutX="258.0" layoutY="225.0" prefHeight="23.0" prefWidth="58.0" promptText="0" value="0" />
+        <ComboBox fx:id="cbSecond" layoutX="329.0" layoutY="225.0" prefHeight="23.0" prefWidth="58.0" promptText="0" value="0" />
+        <Label layoutX="245.0" layoutY="230.0" text="时" />
+        <Label layoutX="317.0" layoutY="230.0" text="分" />
+        <Label layoutX="389.0" layoutY="230.0" text="秒" />
+    </children>
+</AnchorPane>

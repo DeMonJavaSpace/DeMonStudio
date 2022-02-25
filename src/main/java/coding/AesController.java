@@ -1,7 +1,5 @@
 package coding;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -9,8 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import util.AESUtil;
-import util.DESUtil;
+import util.AESUtils;
 import util.Utils;
 
 import java.io.File;
@@ -40,13 +37,13 @@ public class AesController implements Initializable {
         cbCode.getItems().addAll("UTF-8", "GB2312", "GBK");
         cbCode.getSelectionModel().selectFirst();
         cbCode.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            AESUtil.getInstance().setCharset((String) newValue);
+            AESUtils.getInstance().setCharset((String) newValue);
         });
 
         cbDigits.getItems().addAll("128", "192", "256");
         cbDigits.getSelectionModel().selectFirst();
         cbDigits.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            AESUtil.getInstance().setDigits(Integer.parseInt(newValue.toString()));
+            AESUtils.getInstance().setDigits(Integer.parseInt(newValue.toString()));
         });
 
     }
@@ -88,12 +85,12 @@ public class AesController implements Initializable {
         try {
             File file = new File(textStr);
             String result;
-            AESUtil.getInstance().setDesKey(tfKey.getText());
-            AESUtil.getInstance().setIvParameter(tfParameter.getText());
+            AESUtils.getInstance().setDesKey(tfKey.getText());
+            AESUtils.getInstance().setIvParameter(tfParameter.getText());
             if (file.exists()) {
-                result = AESUtil.getInstance().encryptFile(file.getAbsolutePath());
+                result = AESUtils.getInstance().encryptFile(file.getAbsolutePath());
             } else {
-                result = AESUtil.getInstance().encrypt(textStr);
+                result = AESUtils.getInstance().encrypt(textStr);
             }
             System.out.println(result);
             tfResult.setText(result);
@@ -112,12 +109,12 @@ public class AesController implements Initializable {
         try {
             File file = new File(textStr);
             String result;
-            AESUtil.getInstance().setDesKey(tfKey.getText());
-            AESUtil.getInstance().setIvParameter(tfParameter.getText());
+            AESUtils.getInstance().setDesKey(tfKey.getText());
+            AESUtils.getInstance().setIvParameter(tfParameter.getText());
             if (file.exists()) {
-                result = AESUtil.getInstance().decryptFile(file.getAbsolutePath());
+                result = AESUtils.getInstance().decryptFile(file.getAbsolutePath());
             } else {
-                result = AESUtil.getInstance().decrypt(textStr);
+                result = AESUtils.getInstance().decrypt(textStr);
             }
             System.out.println(result);
             tfResult.setText(result);

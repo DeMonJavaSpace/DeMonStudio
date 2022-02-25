@@ -1,6 +1,5 @@
 package util;
 
-import com.google.zxing.common.StringUtils;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 
@@ -15,7 +14,7 @@ import java.util.List;
  * E-mail 757454343@qq.com
  * Desc:
  */
-public class FileUtil {
+public class FileUtils {
     /**
      * 往文件中写入字符串
      *

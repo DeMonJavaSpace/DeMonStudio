@@ -8,7 +8,7 @@ import javafx.application.Platform;
  * E-mail 757454343@qq.com
  * Desc:
  */
-public class ThreadUtil {
+public class ThreadUtils {
 
 
     public static void runOnUiThread(Runnable run) {
