@@ -5,7 +5,7 @@ import javafx.application.Platform;
 /**
  * @author DeMon
  * Created on 2021/6/4.
- * E-mail 757454343@qq.com
+ * E-mail idemon_liu@qq.com
  * Desc:
  */
 public class ThreadUtils {
